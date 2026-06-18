@@ -5,7 +5,8 @@
   /* Backgrounds */
   --color-server-rail: #1e1f22;
   --color-channel-sidebar: #2b2d31;
-  --color-main: #313338;
+  --color-main: #313338; /* used for top bar / channel header (slightly darker) */
+  --color-main-bg: #36393f; /* used for chat content area (slightly lighter) */
   --color-user-bar: #232428;
   --color-hover: #35373c;
   --color-active: #404249;
@@ -61,6 +62,7 @@
   --color-server-rail: #e3e5e8;
   --color-channel-sidebar: #f2f3f5;
   --color-main: #ffffff;
+  --color-main-bg: #ffffff;
   --color-user-bar: #ebebed;
   --color-hover: #e3e5e8;
   --color-active: #c9ccd1;
@@ -83,7 +85,8 @@
 [data-theme="dracula"] {
   --color-server-rail: #191622;
   --color-channel-sidebar: #1e1c2e;
-  --color-main: #282a36;
+  --color-main: #21222e;
+  --color-main-bg: #282a36;
   --color-user-bar: #21222e;
   --color-hover: #343746;
   --color-active: #44475a;
@@ -111,7 +114,8 @@
 [data-theme="nord"] {
   --color-server-rail: #2e3440;
   --color-channel-sidebar: #3b4252;
-  --color-main: #434c5e;
+  --color-main: #3b4252;
+  --color-main-bg: #434c5e;
   --color-user-bar: #3b4252;
   --color-hover: #4c566a;
   --color-active: #4c566a;

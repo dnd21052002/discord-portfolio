@@ -105,6 +105,7 @@ function Shell() {
           <main
             ref={mainRef}
             className="flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y"
+            style={{ background: 'var(--color-main-bg)' }}
           >
             <AnimatePresence mode="wait">
               <motion.div
