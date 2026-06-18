@@ -178,7 +178,7 @@ export function ChannelSidebar({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.25, ease: 'easeOut' }}
-              className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-channel-sidebar shadow-2xl lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 flex h-dvh w-72 max-w-[85vw] flex-col bg-channel-sidebar shadow-2xl lg:hidden"
               aria-label="Server sidebar"
             >
               <SidebarContent />
