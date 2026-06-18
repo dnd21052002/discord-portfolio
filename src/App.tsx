@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ServerRail } from './components/ServerRail'
 import { ChannelSidebar } from './components/ChannelSidebar'
@@ -37,6 +37,7 @@ function Shell() {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth < MOBILE_BP : false,
   )
+  const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem(THEME_KEY) as ThemeId | null
@@ -60,7 +61,13 @@ function Shell() {
   // Auto-close mobile sidebar when switching channel
   const handleSelect = (id: SectionId) => {
     setActive(id)
-    if (isMobile) setSidebarOpen(false)
+    if (isMobile) {
+      setSidebarOpen(false)
+      // Scroll main content to top on mobile (drawer close + new content)
+      requestAnimationFrame(() => {
+        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+      })
+    }
   }
 
   const sections = (['welcome', 'about', 'projects', 'tech', 'experience', 'contact'] as SectionId[]).map(
@@ -95,7 +102,7 @@ function Shell() {
           onOpenSidebar={() => setSidebarOpen(true)}
         />
         <div className="flex min-h-0 flex-1">
-          <main className="flex-1 overflow-y-auto">
+          <main ref={mainRef} className="flex-1 overflow-y-auto overscroll-contain">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}

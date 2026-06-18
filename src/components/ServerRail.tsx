@@ -59,17 +59,17 @@ function ServerIcon({ server }: { server: Server }) {
         .filter(Boolean)
         .join(' ')}
       aria-label={server.name}
-      style={
-        server.imageUrl
-          ? {
-              backgroundImage: `url(${server.imageUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }
-          : undefined
-      }
     >
-      {!server.imageUrl && (
+      {server.imageUrl ? (
+        <span
+          className="block h-full w-full overflow-hidden rounded-[inherit]"
+          style={{
+            backgroundImage: `url(${server.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+      ) : (
         <span className="text-lg font-semibold" aria-hidden>
           {server.emoji}
         </span>
