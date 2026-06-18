@@ -69,8 +69,8 @@ function Shell() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-main text-text-body">
-      {/* Server rail — hidden on mobile */}
-      <div className="hidden lg:block">
+      {/* Server rail — hidden on mobile (inline style overrides Tailwind lg:block) */}
+      <div className="hidden lg:block" style={{ display: isMobile ? 'none' : undefined }}>
         <ServerRail />
       </div>
 
@@ -81,6 +81,7 @@ function Shell() {
         onSelect={handleSelect}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        isMobile={isMobile}
       />
 
       {/* Main */}
@@ -108,7 +109,7 @@ function Shell() {
               </motion.div>
             </AnimatePresence>
           </main>
-          <MemberList />
+          <MemberList isMobile={isMobile} />
         </div>
       </div>
     </div>

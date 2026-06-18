@@ -68,14 +68,17 @@ function IconBtn({ title }: { title: string }) {
   )
 }
 
-export function MemberList() {
+export function MemberList({ isMobile = false }: { isMobile?: boolean } = {}) {
   const { t } = useT()
   const online = skills.filter((s) => s.level === 'expert')
   const idle = skills.filter((s) => s.level === 'proficient')
   const offline = skills.filter((s) => s.level === 'learning')
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto bg-channel-sidebar px-2 py-4 lg:flex">
+    <aside
+      className="hidden w-60 shrink-0 flex-col overflow-y-auto bg-channel-sidebar px-2 py-4 lg:flex"
+      style={{ display: isMobile ? 'none' : undefined }}
+    >
       <MemberGroup
         title={t('members.onlineExpert')}
         count={online.length}
