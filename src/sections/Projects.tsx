@@ -80,9 +80,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
       )}
 
-      <footer className="flex items-center gap-1.5 border-t border-border pt-2 text-xs text-text-dim">
-        <GithubLogo size={14} />
-        <code className="font-mono">{project.path}</code>
+      <footer className="flex items-center gap-1.5 overflow-hidden border-t border-border pt-2 text-xs text-text-dim">
+        <GithubLogo size={14} className="shrink-0" />
+        <code className="truncate font-mono">{project.path}</code>
       </footer>
     </motion.article>
   )

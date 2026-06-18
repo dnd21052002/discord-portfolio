@@ -1,12 +1,16 @@
+import { useEffect } from 'react'
 import {
   Hash,
   Megaphone,
   SpeakerHigh,
   ChatTeardrop,
+  X,
   type Icon,
 } from '@phosphor-icons/react'
+import { motion, AnimatePresence } from 'motion/react'
 import type { SectionId } from '../App'
 import { useT } from '../i18n/LocaleContext'
+import { UserBar } from './MemberList'
 
 type Section = { id: SectionId; label: string }
 
@@ -29,14 +33,39 @@ export function ChannelSidebar({
   sections,
   active,
   onSelect,
+  isOpen,
+  onClose,
 }: {
   sections: Section[]
   active: SectionId
   onSelect: (id: SectionId) => void
+  isOpen: boolean
+  onClose: () => void
 }) {
   const { t } = useT()
 
-  // Group sections by category
+  // Lock body scroll when drawer open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen, onClose])
+
   const groups = sections.reduce<Record<string, Section[]>>((acc, s) => {
     const cat = categoryKey[s.id]
     if (!cat) return acc
@@ -45,23 +74,31 @@ export function ChannelSidebar({
     return acc
   }, {})
 
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <button
-        className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border px-4 text-white shadow-sm transition-colors hover:bg-hover"
-        type="button"
-      >
-        <span className="font-semibold">{t('sidebar.title')}</span>
+  const SidebarContent = () => (
+    <div className="flex h-full flex-col">
+      {/* Server header — has close button on mobile */}
+      <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border bg-channel-sidebar px-4 text-white shadow-sm">
+        <button
+          onClick={onClose}
+          className="rounded p-1 text-text-muted transition-colors hover:bg-hover hover:text-white lg:hidden"
+          type="button"
+          aria-label="Close sidebar"
+        >
+          <X size={18} weight="bold" />
+        </button>
+        <span className="flex-1 truncate text-left font-semibold">
+          {t('sidebar.title')}
+        </span>
         <svg
           width="14"
           height="14"
           viewBox="0 0 24 24"
-          className="ml-auto opacity-70"
+          className="opacity-70"
           fill="currentColor"
         >
           <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z" />
         </svg>
-      </button>
+      </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
         {Object.entries(groups).map(([cat, items]) => {
@@ -105,6 +142,46 @@ export function ChannelSidebar({
           )
         })}
       </div>
+
+      <UserBar />
     </div>
+  )
+
+  return (
+    <>
+      {/* Desktop: fixed sidebar */}
+      <div className="hidden w-60 shrink-0 flex-col bg-channel-sidebar lg:flex">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile: drawer + backdrop */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={onClose}
+              className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+              aria-hidden
+            />
+            <motion.aside
+              key="drawer"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.25, ease: 'easeOut' }}
+              className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-channel-sidebar shadow-2xl lg:hidden"
+              aria-label="Server sidebar"
+            >
+              <SidebarContent />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }

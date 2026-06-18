@@ -8,12 +8,14 @@ import {
   Tray,
   PaintBrush,
   Globe,
+  List,
   Check,
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { SectionId } from '../App'
 import type { ThemeId } from '../App'
 import { useT } from '../i18n/LocaleContext'
+import { profile } from '../data/profile'
 
 type Section = { id: SectionId; label: string }
 
@@ -43,11 +45,15 @@ export function TopBar({
   sections,
   theme,
   onThemeChange,
+  isMobile,
+  onOpenSidebar,
 }: {
   active: SectionId
   sections: Section[]
   theme: ThemeId
   onThemeChange: (t: ThemeId) => void
+  isMobile: boolean
+  onOpenSidebar: () => void
 }) {
   const { t, locale, setLocale } = useT()
   const section = sections.find((s) => s.id === active)
@@ -80,26 +86,41 @@ export function TopBar({
 
   return (
     <header className="channel-header">
-      <Hash size={22} weight="bold" className="text-text-dim" />
-      <h1 className="text-base font-semibold text-white">{section?.label}</h1>
-      <span className="mx-3 h-6 w-px bg-border-strong" />
-      <p className="text-sm text-text-muted">{t(descKey[active])}</p>
-      <div className="ml-auto flex items-center gap-1 text-text-muted">
+      {/* Hamburger — only mobile */}
+      {isMobile && (
         <button
-          aria-label={t('common.pinned')}
-          className="rounded p-1.5 transition-colors hover:bg-hover hover:text-white"
-          type="button"
-        >
-          <PushPinSimple size={20} />
-        </button>
-        <button
+          onClick={onOpenSidebar}
           aria-label={t('common.members')}
-          className="rounded p-1.5 transition-colors hover:bg-hover hover:text-white"
+          className="rounded p-1.5 text-text-muted transition-colors hover:bg-hover hover:text-white"
           type="button"
         >
-          <Users size={20} />
+          <List size={20} weight="bold" />
         </button>
+      )}
 
+      {/* Mobile: small avatar of owner (acts as "server" icon) */}
+      {isMobile && (
+        <div
+          className="h-6 w-6 shrink-0 overflow-hidden rounded-full"
+          style={{
+            backgroundImage: `url(${profile.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          aria-label={profile.name}
+        />
+      )}
+
+      <Hash size={22} weight="bold" className="text-text-dim" />
+      <h1 className="truncate text-base font-semibold text-white">
+        {section?.label}
+      </h1>
+      <span className="mx-3 hidden h-6 w-px shrink-0 bg-border-strong sm:inline-block" />
+      <p className="hidden truncate text-sm text-text-muted sm:block">
+        {t(descKey[active])}
+      </p>
+
+      <div className="ml-auto flex shrink-0 items-center gap-1 text-text-muted">
         {/* Language switcher */}
         <div ref={langRef} className="relative">
           <button
@@ -226,20 +247,37 @@ export function TopBar({
           </AnimatePresence>
         </div>
 
-        <div className="relative ml-1">
+        {/* Search — hidden on small mobile */}
+        <div className="relative hidden md:block">
           <input
             type="text"
             placeholder={t('common.search')}
-            className="h-7 w-36 rounded-md bg-server-rail px-3 text-sm text-text-body placeholder:text-text-placeholder outline-none transition-all focus:w-56"
+            className="h-7 w-32 rounded-md bg-server-rail px-3 text-sm text-text-body placeholder:text-text-placeholder outline-none transition-all focus:w-52 lg:w-36 lg:focus:w-56"
           />
           <MagnifyingGlass
             size={14}
             className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-placeholder"
           />
         </div>
+
+        {/* Other actions — progressively hidden on smaller screens */}
+        <button
+          aria-label={t('common.pinned')}
+          className="hidden rounded p-1.5 transition-colors hover:bg-hover hover:text-white md:inline-flex"
+          type="button"
+        >
+          <PushPinSimple size={20} />
+        </button>
+        <button
+          aria-label={t('common.members')}
+          className="hidden rounded p-1.5 transition-colors hover:bg-hover hover:text-white xl:inline-flex"
+          type="button"
+        >
+          <Users size={20} />
+        </button>
         <button
           aria-label={t('common.inbox')}
-          className="rounded p-1.5 transition-colors hover:bg-hover hover:text-white"
+          className="hidden rounded p-1.5 transition-colors hover:bg-hover hover:text-white lg:inline-flex"
           type="button"
         >
           <Tray size={20} />
