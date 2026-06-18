@@ -10,13 +10,13 @@ export function Projects() {
       <div className="mb-4 rounded-md border-l-4 border-blurple bg-embed px-4 py-3 text-sm text-text-body">
         <strong className="text-white">📌 {t('projects.pinned')}</strong> ·{' '}
         {t('projects.pinnedDesc')}{' '}
-        <code className="rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs">
+        <code className="break-all rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs">
           ~/Developer
         </code>
         . {t('projects.eachThread')}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {projects.map((p, i) => (
           <ProjectCard key={p.id} project={p} index={i} />
         ))}
@@ -38,13 +38,13 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.3, ease: 'easeOut' }}
       whileHover={{ y: -2 }}
-      className="group rounded-lg border border-border bg-channel-sidebar p-4 transition-colors hover:border-blurple/40"
+      className="group min-w-0 overflow-hidden rounded-lg border border-border bg-channel-sidebar p-4 transition-colors hover:border-blurple/40"
     >
-      <header className="mb-2 flex items-center gap-2">
-        <span className="text-2xl" aria-hidden>
+      <header className="mb-2 flex min-w-0 items-center gap-2">
+        <span className="shrink-0 text-2xl" aria-hidden>
           {project.emoji}
         </span>
-        <h3 className="truncate text-base font-semibold text-white">
+        <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-white">
           {project.name}
         </h3>
         {project.link && (
@@ -52,7 +52,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-auto rounded p-1 text-text-muted transition-colors hover:bg-hover hover:text-white"
+            className="ml-auto shrink-0 rounded p-1 text-text-muted transition-colors hover:bg-hover hover:text-white"
             aria-label="Open link"
           >
             <ArrowSquareOut size={16} />
@@ -60,7 +60,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         )}
       </header>
 
-      <p className="mb-3 text-sm leading-relaxed text-text-body">{description}</p>
+      <p className="mb-3 min-w-0 text-sm leading-relaxed break-words text-text-body">
+        {description}
+      </p>
 
       <div className="mb-3 flex flex-wrap gap-1.5">
         {project.stack.map((s) => (
@@ -80,9 +82,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
       )}
 
-      <footer className="flex items-center gap-1.5 overflow-hidden border-t border-border pt-2 text-xs text-text-dim">
+      <footer className="flex min-w-0 items-center gap-1.5 overflow-hidden border-t border-border pt-2 text-xs text-text-dim">
         <GithubLogo size={14} className="shrink-0" />
-        <code className="truncate font-mono">{project.path}</code>
+        <code className="min-w-0 flex-1 truncate break-all font-mono">
+          {project.path}
+        </code>
       </footer>
     </motion.article>
   )
