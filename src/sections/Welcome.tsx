@@ -14,9 +14,9 @@ export function Welcome() {
       >
         <p>
           {t('welcome.greeting')}{' '}
-          <strong className="text-white">@{t('profile.name')}&apos;s Portfolio</strong>{' '}
+          <strong className="text-text-primary">@{t('profile.name')}&apos;s Portfolio</strong>{' '}
           {t('welcome.channelLabel')}{' '}
-          <strong className="text-white">#welcome</strong>
+          <strong className="text-text-primary">#welcome</strong>
           {t('welcome.channelTag')}
         </p>
         <p className="mt-2">{t('welcome.intro')}</p>
@@ -52,7 +52,7 @@ export function Welcome() {
         isBot
       >
         <p>
-          <strong className="text-white">@{profile.name}</strong>{' '}
+          <strong className="text-text-primary">@{profile.name}</strong>{' '}
           {t('welcome.botMessage')}{' '}
           <span className="mention">#projects</span>
           {t('welcome.botCheckIt')}
@@ -67,7 +67,7 @@ export function Welcome() {
         isBot
       >
         <p className="text-text-muted">
-          <strong className="text-white">{t('welcome.tip')}:</strong>{' '}
+          <strong className="text-text-primary">{t('welcome.tip')}:</strong>{' '}
           {t('welcome.tipBody')}
         </p>
       </Message>
@@ -116,7 +116,7 @@ function TypingIndicator() {
         aria-label={profile.name}
       />
       <div className="flex items-center gap-2 py-2 text-xs text-text-dim">
-        <span className="font-semibold text-white">{profile.name}</span>
+        <span className="font-semibold text-text-primary">{profile.name}</span>
         <span>{t('status.typing')}</span>
         <span className="flex items-end gap-0.5">
           <span className="typing-dot" />

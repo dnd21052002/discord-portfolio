@@ -8,7 +8,7 @@ export function Projects() {
   return (
     <div className="space-y-1">
       <div className="mb-4 rounded-md border-l-4 border-blurple bg-embed px-4 py-3 text-sm text-text-body">
-        <strong className="text-white">📌 {t('projects.pinned')}</strong> ·{' '}
+        <strong className="text-text-primary">📌 {t('projects.pinned')}</strong> ·{' '}
         {t('projects.pinnedDesc')}{' '}
         <code className="break-all rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs">
           ~/Developer
@@ -44,7 +44,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         <span className="shrink-0 text-2xl" aria-hidden>
           {project.emoji}
         </span>
-        <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-white">
+        <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-text-primary">
           {project.name}
         </h3>
         {project.link && (

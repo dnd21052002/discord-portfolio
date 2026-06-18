@@ -216,7 +216,10 @@
     @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-semibold text-white;
   }
   .message-header { @apply flex items-baseline gap-2; }
-  .message-author { @apply text-base font-medium text-white; }
+  .message-author {
+    @apply text-base font-medium;
+    color: var(--color-text-primary);
+  }
   .message-timestamp {
     @apply text-xs;
     color: var(--color-text-faint);
@@ -226,16 +229,20 @@
     color: var(--color-text-body);
     overflow-wrap: anywhere;
   }
-  .message-content strong { @apply font-semibold text-white; }
+  .message-content strong {
+    @apply font-semibold;
+    color: var(--color-text-primary);
+  }
   .message-content code {
     word-break: break-all;
   }
 
   /* Channel header (top bar) */
   .channel-header {
-    @apply flex h-12 shrink-0 items-center gap-2 px-4 text-white shadow-sm;
+    @apply flex h-12 shrink-0 items-center gap-2 px-4 shadow-sm;
     background: var(--color-main);
     border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
   }
 
   /* Mention */

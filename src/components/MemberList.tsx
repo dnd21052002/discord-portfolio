@@ -35,7 +35,7 @@ export function UserBar() {
           <span className={`member-status-dot ${profile.status}`} />
         </div>
         <div className="min-w-0 flex-1 text-left">
-          <div className="truncate text-sm font-semibold text-white">
+          <div className="truncate text-sm font-semibold text-text-primary">
             {profile.name}
           </div>
           <div className="flex items-center gap-1 truncate text-xs text-text-muted">
@@ -103,7 +103,7 @@ export function MemberList({ isMobile = false }: { isMobile?: boolean } = {}) {
         {t('members.nowPlaying')}
       </div>
       <div className="mx-2 mt-1 rounded-md bg-server-rail p-3 text-xs text-text-muted">
-        <div className="mb-1 truncate text-white">{t('profile.statusText')}</div>
+        <div className="mb-1 truncate text-text-primary">{t('profile.statusText')}</div>
         <div className="truncate">{t('profile.tagline')}</div>
       </div>
     </aside>

@@ -112,7 +112,7 @@ export function TopBar({
       )}
 
       <Hash size={22} weight="bold" className="text-text-dim" />
-      <h1 className="truncate text-base font-semibold text-white">
+      <h1 className="truncate text-base font-semibold text-text-primary">
         {section?.label}
       </h1>
       <span className="mx-3 hidden h-6 w-px shrink-0 bg-border-strong sm:inline-block" />

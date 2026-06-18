@@ -20,7 +20,7 @@ export function Experience() {
             color={i === 0 ? 'var(--color-role-java)' : 'var(--color-role-react)'}
             timestamp={period}
           >
-            <p className="mb-1 text-base font-medium text-white">
+            <p className="mb-1 text-base font-medium text-text-primary">
               {t(exp.roleKey)}
             </p>
             <p className="text-text-body">{t(exp.descriptionKey)}</p>
@@ -42,11 +42,11 @@ export function Experience() {
       >
         <p className="text-text-muted">
           {t('experience.systemMsg')}{' '}
-          <code className="rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs text-white">
+          <code className="rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs text-text-primary">
             ~/Developer/
           </code>{' '}
           — {t('experience.systemCount')}{' '}
-          <code className="rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs text-white">
+          <code className="rounded bg-server-rail px-1.5 py-0.5 font-mono text-xs text-text-primary">
             20+ projects
           </code>{' '}
           {t('experience.systemStack')}

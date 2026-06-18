@@ -24,15 +24,15 @@ export function About() {
         timestamp={formatTime(9, 31)}
       >
         <p className="text-text-muted">
-          <strong className="text-white">{t('about.location')}</strong>{' '}
+          <strong className="text-text-primary">{t('about.location')}</strong>{' '}
           {t('profile.location')}
         </p>
         <p className="text-text-muted">
-          <strong className="text-white">{t('about.languages')}</strong>{' '}
+          <strong className="text-text-primary">{t('about.languages')}</strong>{' '}
           {t('profile.languages')}
         </p>
         <p className="mt-2 text-text-muted">
-          <strong className="text-white">{t('about.roles')}</strong>
+          <strong className="text-text-primary">{t('about.roles')}</strong>
         </p>
         <div className="mt-1 flex flex-wrap gap-1.5">
           {[t('profile.role.backend'), t('profile.role.fullstack'), t('profile.role.3dar')].map(

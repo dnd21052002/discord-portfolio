@@ -74,7 +74,7 @@ export function Contact() {
                 <div className="text-[11px] font-semibold uppercase tracking-wide text-text-dim">
                   {t(c.labelKey)}
                 </div>
-                <div className="truncate text-sm font-medium text-white">
+                <div className="truncate text-sm font-medium text-text-primary">
                   {display}
                 </div>
               </div>
@@ -107,7 +107,7 @@ export function Contact() {
         isBot
       >
         <p className="text-text-muted">
-          <strong className="text-white">{t('contact.noteTitle')}:</strong>{' '}
+          <strong className="text-text-primary">{t('contact.noteTitle')}:</strong>{' '}
           {t('contact.noteBody')}{' '}
           <a
             href={`mailto:${profile.email}`}

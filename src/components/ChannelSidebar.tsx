@@ -78,7 +78,7 @@ export function ChannelSidebar({
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       {/* Server header — has close button on mobile */}
-      <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border bg-channel-sidebar px-4 text-white shadow-sm">
+      <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border bg-channel-sidebar px-4 text-text-primary shadow-sm">
         <button
           onClick={onClose}
           className="rounded p-1 text-text-muted transition-colors hover:bg-hover hover:text-white lg:hidden"
