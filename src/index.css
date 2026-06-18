@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+/* ===== Default (Discord Dark) ===== */
+@theme {
+  /* Backgrounds */
+  --color-server-rail: #1e1f22;
+  --color-channel-sidebar: #2b2d31;
+  --color-main: #313338;
+  --color-user-bar: #232428;
+  --color-hover: #35373c;
+  --color-active: #404249;
+  --color-mention: #414388;
+  --color-mention-hover: #505acb;
+  --color-embed: #2e3035;
+  --color-input-bg: #383a40;
+  --color-code-bg: #1e1f22;
+  --color-border: #1f2023;
+  --color-border-strong: #3f4147;
+
+  /* Text */
+  --color-text-primary: #f2f3f5;
+  --color-text-body: #dbdee1;
+  --color-text-muted: #b5bac1;
+  --color-text-dim: #80848e;
+  --color-text-faint: #949ba4;
+  --color-text-placeholder: #6d6f78;
+  --color-text-link: #00a8fc;
+
+  /* Brand & status */
+  --color-blurple: #5865f2;
+  --color-blurple-hover: #4752c4;
+  --color-blurple-active: #3c45a5;
+  --color-blurple-foreground: #ffffff;
+  --color-online: #23a55a;
+  --color-idle: #f0b232;
+  --color-dnd: #f23f43;
+  --color-offline: #80848e;
+
+  /* Role colors (tech stack) */
+  --color-role-java: #f89820;
+  --color-role-spring: #6db33f;
+  --color-role-react: #61dafb;
+  --color-role-typescript: #3178c6;
+  --color-role-tailwind: #38bdf8;
+  --color-role-threejs: #ffffff;
+  --color-role-nextjs: #ffffff;
+  --color-role-flutter: #54c5f8;
+  --color-role-python: #3776ab;
+  --color-role-docker: #2496ed;
+  --color-role-postgres: #336791;
+
+  /* Typography */
+  --font-display: "Geist", "gg sans", "Inter", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", "Menlo", monospace;
+}
+
+/* ===== Theme overrides (data-theme on <html>) ===== */
+
+/* Discord Light */
+[data-theme="light"] {
+  --color-server-rail: #e3e5e8;
+  --color-channel-sidebar: #f2f3f5;
+  --color-main: #ffffff;
+  --color-user-bar: #ebebed;
+  --color-hover: #e3e5e8;
+  --color-active: #c9ccd1;
+  --color-mention: #c9cdfb;
+  --color-mention-hover: #b3b8f3;
+  --color-embed: #f2f3f5;
+  --color-input-bg: #ebebed;
+  --color-code-bg: #f2f3f5;
+  --color-border: #e3e5e8;
+  --color-border-strong: #c9ccd1;
+  --color-text-primary: #060607;
+  --color-text-body: #2e3338;
+  --color-text-muted: #4f5660;
+  --color-text-dim: #5c626c;
+  --color-text-faint: #80848e;
+  --color-text-placeholder: #99a1ab;
+}
+
+/* Dracula (purple/pink dark) */
+[data-theme="dracula"] {
+  --color-server-rail: #191622;
+  --color-channel-sidebar: #1e1c2e;
+  --color-main: #282a36;
+  --color-user-bar: #21222e;
+  --color-hover: #343746;
+  --color-active: #44475a;
+  --color-mention: #44475a;
+  --color-mention-hover: #6272a4;
+  --color-embed: #21222e;
+  --color-input-bg: #44475a;
+  --color-code-bg: #191622;
+  --color-border: #191622;
+  --color-border-strong: #44475a;
+  --color-text-primary: #f8f8f2;
+  --color-text-body: #f8f8f2;
+  --color-text-muted: #bd93f9;
+  --color-text-dim: #6272a4;
+  --color-text-faint: #6272a4;
+  --color-text-placeholder: #6272a4;
+  --color-blurple: #bd93f9;
+  --color-blurple-hover: #a280d6;
+  --color-online: #50fa7b;
+  --color-idle: #f1fa8c;
+  --color-dnd: #ff5555;
+}
+
+/* Nord (arctic blue) */
+[data-theme="nord"] {
+  --color-server-rail: #2e3440;
+  --color-channel-sidebar: #3b4252;
+  --color-main: #434c5e;
+  --color-user-bar: #3b4252;
+  --color-hover: #4c566a;
+  --color-active: #4c566a;
+  --color-mention: #5e81ac;
+  --color-mention-hover: #81a1c1;
+  --color-embed: #3b4252;
+  --color-input-bg: #434c5e;
+  --color-code-bg: #2e3440;
+  --color-border: #2e3440;
+  --color-border-strong: #4c566a;
+  --color-text-primary: #eceff4;
+  --color-text-body: #e5e9f0;
+  --color-text-muted: #d8dee9;
+  --color-text-dim: #81a1c1;
+  --color-text-faint: #81a1c1;
+  --color-text-placeholder: #4c566a;
+  --color-blurple: #88c0d0;
+  --color-blurple-hover: #8fbcbb;
+  --color-online: #a3be8c;
+  --color-idle: #ebcb8b;
+  --color-dnd: #bf616a;
+}
+
+/* ===== Base ===== */
+@layer base {
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    font-family: var(--font-display);
+    background: var(--color-main);
+    color: var(--color-text-body);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-server-rail);
+    border-radius: 4px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-strong);
+  }
+}
+
+/* ===== Components ===== */
+@layer components {
+  /* Server icon (left rail) */
+  .server-icon {
+    @apply relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-[24px] text-white transition-all duration-200;
+    background: var(--color-main);
+  }
+  .server-icon:hover {
+    @apply rounded-2xl;
+    background: var(--color-blurple);
+  }
+  .server-icon.active {
+    @apply rounded-2xl;
+    background: var(--color-blurple);
+  }
+  .server-icon.active::before,
+  .server-icon:hover::before {
+    content: "";
+    @apply absolute -left-3 h-2 w-1 rounded-r-full bg-white transition-all duration-200;
+  }
+  .server-icon:not(.active):hover::before { @apply h-5; }
+  .server-icon.active::before { @apply h-8; }
+
+  /* Channel item */
+  .channel-item {
+    @apply flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm transition-colors;
+    color: var(--color-text-dim);
+  }
+  .channel-item:hover {
+    background: var(--color-hover);
+    color: var(--color-text-body);
+  }
+  .channel-item.active {
+    background: var(--color-active);
+    color: var(--color-text-primary);
+  }
+  .channel-item .icon { color: var(--color-text-dim); }
+  .channel-item:hover .icon,
+  .channel-item.active .icon { color: var(--color-text-muted); }
+
+  /* Message bubble */
+  .message {
+    @apply flex gap-4 px-4 py-0.5 transition-colors;
+  }
+  .message:hover {
+    background: color-mix(in srgb, var(--color-hover) 70%, transparent);
+  }
+  .message-avatar {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-semibold text-white;
+  }
+  .message-header { @apply flex items-baseline gap-2; }
+  .message-author { @apply text-base font-medium text-white; }
+  .message-timestamp {
+    @apply text-xs;
+    color: var(--color-text-faint);
+  }
+  .message-content {
+    @apply text-[15px] leading-relaxed;
+    color: var(--color-text-body);
+  }
+  .message-content strong { @apply font-semibold text-white; }
+
+  /* Channel header (top bar) */
+  .channel-header {
+    @apply flex h-12 shrink-0 items-center gap-2 px-4 text-white shadow-sm;
+    background: var(--color-main);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Mention */
+  .mention {
+    @apply rounded px-1;
+    background: color-mix(in srgb, var(--color-blurple) 15%, transparent);
+    color: color-mix(in srgb, var(--color-blurple) 60%, white);
+  }
+  .mention:hover {
+    background: color-mix(in srgb, var(--color-blurple) 30%, transparent);
+  }
+
+  /* Member list */
+  .member-item {
+    @apply flex items-center gap-3 rounded-md px-2 py-1.5 text-sm transition-colors opacity-60;
+    color: var(--color-text-muted);
+  }
+  .member-item.online {
+    @apply opacity-100;
+    color: var(--color-text-primary);
+  }
+  .member-item:hover {
+    background: var(--color-hover);
+  }
+  .member-avatar {
+    @apply relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white;
+  }
+  .member-status-dot {
+    @apply absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-[3px];
+    border-color: var(--color-channel-sidebar);
+  }
+  .member-status-dot.online { background: var(--color-online); }
+  .member-status-dot.idle { background: var(--color-idle); }
+  .member-status-dot.dnd { background: var(--color-dnd); }
+  .member-status-dot.offline { background: var(--color-offline); }
+
+  /* CTA */
+  .btn-blurple {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors;
+    background: var(--color-blurple);
+  }
+  .btn-blurple:hover { background: var(--color-blurple-hover); }
+
+  .server-tooltip {
+    @apply pointer-events-none absolute left-full z-50 ml-3 whitespace-nowrap rounded-md bg-black px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity;
+  }
+  .server-icon:hover .server-tooltip { @apply opacity-100; }
+}
+
+/* Animations */
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.message-in { animation: message-in 0.3s ease-out backwards; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+.typing-dot {
+  @apply h-1.5 w-1.5 rounded-full;
+  background: var(--color-text-dim);
+  animation: typing-bounce 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(88, 101, 242, 0); }
+}
+.pulse-glow { animation: pulse-glow 2s infinite; }
