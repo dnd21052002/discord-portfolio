@@ -77,7 +77,10 @@ function Shell() {
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
       {/* Server rail — hidden on mobile (inline style overrides Tailwind lg:block) */}
-      <div className="hidden lg:block" style={{ display: isMobile ? 'none' : undefined }}>
+      <div
+        className="hidden bg-server-rail lg:block"
+        style={{ display: isMobile ? 'none' : undefined }}
+      >
         <ServerRail />
       </div>
 
@@ -104,7 +107,7 @@ function Shell() {
         <div className="flex min-h-0 flex-1">
           <main
             ref={mainRef}
-            className="flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y"
+            className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y"
             style={{ background: 'var(--color-main-bg)' }}
           >
             <AnimatePresence mode="wait">

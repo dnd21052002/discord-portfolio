@@ -222,10 +222,14 @@
     color: var(--color-text-faint);
   }
   .message-content {
-    @apply text-[15px] leading-relaxed;
+    @apply text-[15px] leading-relaxed break-words;
     color: var(--color-text-body);
+    overflow-wrap: anywhere;
   }
   .message-content strong { @apply font-semibold text-white; }
+  .message-content code {
+    word-break: break-all;
+  }
 
   /* Channel header (top bar) */
   .channel-header {
