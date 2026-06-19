@@ -36,6 +36,7 @@ export function ChannelSidebar({
   isOpen,
   onClose,
   isMobile = false,
+  hide = false,
 }: {
   sections: Section[]
   active: SectionId
@@ -43,6 +44,7 @@ export function ChannelSidebar({
   isOpen: boolean
   onClose: () => void
   isMobile?: boolean
+  hide?: boolean
 }) {  const { t } = useT()
 
   // Lock body scroll when drawer open
@@ -153,7 +155,7 @@ export function ChannelSidebar({
       {/* Desktop: fixed sidebar — hidden when on mobile (via inline style to override Tailwind lg:flex) */}
       <div
         className="w-60 shrink-0 flex-col bg-channel-sidebar lg:flex"
-        style={{ display: isMobile ? 'none' : undefined }}
+        style={{ display: isMobile || hide ? 'none' : undefined }}
       >
         <SidebarContent />
       </div>

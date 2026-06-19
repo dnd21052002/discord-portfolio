@@ -1,35 +1,39 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ServerRail } from './components/ServerRail'
 import { ChannelSidebar } from './components/ChannelSidebar'
 import { TopBar } from './components/TopBar'
 import { MemberList } from './components/MemberList'
 import { MainArea } from './components/MainArea'
-import { Game } from './sections/Game'
+import { GameHub, type GameId } from './games/GameHub'
 import { LocaleProvider, useT } from './i18n/LocaleContext'
 
-export type SectionId =
-  | 'welcome'
-  | 'about'
-  | 'projects'
-  | 'tech'
-  | 'experience'
-  | 'contact'
+// Lazy load games to keep initial bundle small
+const Snake = lazy(() => import('./games/Snake'))
+const TicTacToe = lazy(() => import('./games/TicTacToe'))
+const MemoryMatch = lazy(() => import('./games/MemoryMatch'))
+const Game2048 = lazy(() => import('./games/Game2048'))
 
+export type SectionId =
+  | 'welcome' | 'about' | 'projects' | 'tech' | 'experience' | 'contact'
 export type ThemeId = 'dark' | 'light' | 'dracula' | 'nord'
-export type View = SectionId | 'game'
+export type View = SectionId | 'hub' | `game:${GameId}`
 
 const sectionKeyMap: Record<SectionId, string> = {
-  welcome: 'channel.welcome',
-  about: 'channel.about-me',
-  projects: 'channel.projects',
-  tech: 'channel.tech-stack',
-  experience: 'channel.experience',
-  contact: 'channel.contact-me',
+  welcome: 'channel.welcome', about: 'channel.about-me',
+  projects: 'channel.projects', tech: 'channel.tech-stack',
+  experience: 'channel.experience', contact: 'channel.contact-me',
+}
+
+const gameTitleKeys: Record<GameId, string> = {
+  snake: 'gamehub.snake.title',
+  tictactoe: 'gamehub.tictactoe.title',
+  memory: 'gamehub.memory.title',
+  '2048': 'gamehub.2048.title',
 }
 
 const THEME_KEY = 'ngocdiep-portfolio-theme'
-const MOBILE_BP = 1024 // lg breakpoint
+const MOBILE_BP = 1024
 
 function Shell() {
   const { t } = useT()
@@ -44,9 +48,7 @@ function Shell() {
 
   useEffect(() => {
     const saved = localStorage.getItem(THEME_KEY) as ThemeId | null
-    if (saved && ['dark', 'light', 'dracula', 'nord'].includes(saved)) {
-      setTheme(saved)
-    }
+    if (saved && ['dark', 'light', 'dracula', 'nord'].includes(saved)) setTheme(saved)
   }, [])
 
   useEffect(() => {
@@ -55,9 +57,9 @@ function Shell() {
   }, [theme])
 
   useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < MOBILE_BP)
-    window.addEventListener('resize', handler)
-    return () => window.removeEventListener('resize', handler)
+    const h = () => setIsMobile(window.innerWidth < MOBILE_BP)
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
   }, [])
 
   const handleSelect = (id: SectionId) => {
@@ -65,24 +67,35 @@ function Shell() {
     setView(id)
     if (isMobile) {
       setSidebarOpen(false)
-      requestAnimationFrame(() => {
-        mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-      })
+      requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
     }
   }
 
   const handlePlay = () => {
-    setView('game')
+    setView('hub')
     if (isMobile) setSidebarOpen(false)
+    requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
   }
 
-  const handleBackFromGame = () => {
-    setView(active)
+  const handleGameSelect = (id: GameId) => {
+    setView(`game:${id}` as View)
+    requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
   }
 
-  const sections = (['welcome', 'about', 'projects', 'tech', 'experience', 'contact'] as SectionId[]).map(
-    (id) => ({ id, label: t(sectionKeyMap[id]) }),
-  )
+  const handleBack = () => {
+    if (typeof view === 'string' && view.startsWith('game:')) {
+      setView('hub')
+    } else {
+      setView(active)
+    }
+  }
+
+  const sections = (['welcome', 'about', 'projects', 'tech', 'experience', 'contact'] as SectionId[])
+    .map((id) => ({ id, label: t(sectionKeyMap[id]) }))
+
+  const isInGameZone = view === 'hub' || (typeof view === 'string' && view.startsWith('game:'))
+  const currentGameId = typeof view === 'string' && view.startsWith('game:') ? view.slice(5) as GameId : null
+  const viewLabel = currentGameId ? `🐍 ${t(gameTitleKeys[currentGameId])}` : view === 'hub' ? `🎮 ${t('gamehub.title')}` : undefined
 
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
@@ -100,18 +113,19 @@ function Shell() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         isMobile={isMobile}
+        hide={isInGameZone}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
-          active={view === 'game' ? 'welcome' : active}
+          active={isInGameZone ? 'welcome' : active}
           sections={sections}
           theme={theme}
           onThemeChange={setTheme}
           isMobile={isMobile}
           onOpenSidebar={() => setSidebarOpen(true)}
-          viewLabel={view === 'game' ? '🐍 snake' : undefined}
-          onBack={view === 'game' ? handleBackFromGame : undefined}
+          viewLabel={viewLabel}
+          onBack={isInGameZone ? handleBack : undefined}
         />
         <div className="flex min-h-0 flex-1">
           <main
@@ -127,12 +141,23 @@ function Shell() {
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
                 className={
-                  view === 'game'
-                    ? 'flex min-h-full items-center justify-center px-4 py-6'
+                  isInGameZone
+                    ? 'mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-10'
                     : 'mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8'
                 }
               >
-                {view === 'game' ? <Game /> : <MainArea active={active} />}
+                {view === 'hub' ? (
+                  <GameHub onSelect={handleGameSelect} />
+                ) : currentGameId ? (
+                  <Suspense fallback={<div className="flex h-64 items-center justify-center text-text-muted">Loading...</div>}>
+                    {currentGameId === 'snake' && <Snake />}
+                    {currentGameId === 'tictactoe' && <TicTacToe />}
+                    {currentGameId === 'memory' && <MemoryMatch />}
+                    {currentGameId === '2048' && <Game2048 />}
+                  </Suspense>
+                ) : (
+                  <MainArea active={active} />
+                )}
               </motion.div>
             </AnimatePresence>
           </main>

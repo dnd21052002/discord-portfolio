@@ -99,7 +99,62 @@ const vi: Dict = {
   'time.todayAt': 'Hôm nay lúc',
   'time.now': 'nay',
 
-  // ── Game ──
+  // ── Game hub ──
+  'gamehub.aria': 'Play zone',
+  'gamehub.title': 'Mini Games',
+  'gamehub.subtitle': 'Click chọn game để chơi. Tất cả đều chơi được trên mobile.',
+  'gamehub.tapToPlay': 'Bấm để chơi',
+  'gamehub.tip': '↑↓←→ / WASD / vuốt mobile',
+  'gamehub.snake.title': 'Snake',
+  'gamehub.snake.desc': 'Rắn ăn mồi, tránh tường và đuôi. Cổ điển.',
+  'gamehub.tictactoe.title': 'Tic-Tac-Toe',
+  'gamehub.tictactoe.desc': 'Đấu với AI. Hard mode không thể thắng.',
+  'gamehub.memory.title': 'Memory Match',
+  'gamehub.memory.desc': 'Lật cặp emoji. Ít move + nhanh = điểm cao.',
+  'gamehub.2048.title': '2048',
+  'gamehub.2048.desc': 'Trượt số, gộp giống nhau, đạt 2048.',
+
+  // ── Snake ──
+  'snake.title': 'Snake',
+  'snake.subtitle': '↑↓←→ hoặc WASD · Space tạm dừng',
+  'snake.start': 'Bắt đầu',
+  'snake.score': 'Điểm',
+  'snake.best': 'Kỷ lục',
+  'snake.controlsHint': '↑↓←→ · WASD · Space tạm dừng',
+
+  // ── Tic-Tac-Toe ──
+  'ttt.easy': 'Dễ',
+  'ttt.hard': 'Khó',
+  'ttt.reset': 'Chơi lại',
+  'ttt.wins': 'Thắng',
+  'ttt.draws': 'Hòa',
+  'ttt.losses': 'Thua',
+  'ttt.youWin': 'Bạn thắng!',
+  'ttt.youLose': 'AI thắng!',
+  'ttt.draw': 'Hòa!',
+  'ttt.playAgain': 'Chơi lại',
+
+  // ── Memory ──
+  'memory.title': 'Memory Match',
+  'memory.subtitle': 'Lật 2 thẻ. Khớp → giữ. Tìm hết 8 cặp.',
+  'memory.start': 'Bắt đầu',
+  'memory.moves': 'Lượt',
+  'memory.time': 'Thời gian',
+  'memory.best': 'Kỷ lục',
+  'memory.won': 'Hoàn thành!',
+  'memory.playAgain': 'Chơi lại',
+
+  // ── 2048 ──
+  'g2048.score': 'Điểm',
+  'g2048.best': 'Kỷ lục',
+  'g2048.new': 'Mới',
+  'g2048.over': 'Hết nước đi!',
+  'g2048.tryAgain': 'Thử lại',
+  'g2048.youWin': 'Bạn đạt 2048!',
+  'g2048.continue': 'Tiếp tục',
+  'g2048.winScore': 'Điểm:',
+
+  // ── Game (shared) ──
   'game.controls': 'Dùng phím mũi tên hoặc WASD để di chuyển',
   'game.start': 'Bắt đầu',
   'game.paused': 'Tạm dừng',
@@ -277,7 +332,62 @@ const en: Dict = {
   'time.todayAt': 'Today at',
   'time.now': 'present',
 
-  // ── Game ──
+  // ── Game hub ──
+  'gamehub.aria': 'Play zone',
+  'gamehub.title': 'Mini Games',
+  'gamehub.subtitle': 'Pick a game to play. All work on mobile too.',
+  'gamehub.tapToPlay': 'Tap to play',
+  'gamehub.tip': '↑↓←→ / WASD / swipe on mobile',
+  'gamehub.snake.title': 'Snake',
+  'gamehub.snake.desc': 'Eat food, avoid walls and yourself. Classic arcade.',
+  'gamehub.tictactoe.title': 'Tic-Tac-Toe',
+  'gamehub.tictactoe.desc': 'Challenge the AI. Hard mode is unbeatable.',
+  'gamehub.memory.title': 'Memory Match',
+  'gamehub.memory.desc': 'Flip emoji pairs. Fewer moves + faster = best score.',
+  'gamehub.2048.title': '2048',
+  'gamehub.2048.desc': 'Slide tiles, merge same numbers, reach 2048.',
+
+  // ── Snake ──
+  'snake.title': 'Snake',
+  'snake.subtitle': '↑↓←→ or WASD · Space to pause',
+  'snake.start': 'Start',
+  'snake.score': 'Score',
+  'snake.best': 'Best',
+  'snake.controlsHint': '↑↓←→ · WASD · Space to pause',
+
+  // ── Tic-Tac-Toe ──
+  'ttt.easy': 'Easy',
+  'ttt.hard': 'Hard',
+  'ttt.reset': 'Reset',
+  'ttt.wins': 'Wins',
+  'ttt.draws': 'Draws',
+  'ttt.losses': 'Losses',
+  'ttt.youWin': 'You win!',
+  'ttt.youLose': 'AI wins!',
+  'ttt.draw': 'Draw!',
+  'ttt.playAgain': 'Play again',
+
+  // ── Memory ──
+  'memory.title': 'Memory Match',
+  'memory.subtitle': 'Flip 2 cards. Match → keep. Find all 8 pairs.',
+  'memory.start': 'Start',
+  'memory.moves': 'Moves',
+  'memory.time': 'Time',
+  'memory.best': 'Best',
+  'memory.won': 'You win!',
+  'memory.playAgain': 'Play again',
+
+  // ── 2048 ──
+  'g2048.score': 'Score',
+  'g2048.best': 'Best',
+  'g2048.new': 'New',
+  'g2048.over': 'Game over!',
+  'g2048.tryAgain': 'Try again',
+  'g2048.youWin': 'You reached 2048!',
+  'g2048.continue': 'Continue',
+  'g2048.winScore': 'Score:',
+
+  // ── Game (shared) ──
   'game.controls': 'Use arrow keys or WASD to move',
   'game.start': 'Start',
   'game.paused': 'Paused',
