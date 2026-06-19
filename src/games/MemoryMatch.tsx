@@ -49,37 +49,63 @@ export default function MemoryMatch() {
     }
   }, [running])
 
-  // Match check
+  // Match check (run once per pair of flipped cards)
   useEffect(() => {
     if (flipped.length !== 2) return
+    const [a, b] = flipped
+    const aCard = cards[a]
+    const bCard = cards[b]
+    if (!aCard || !bCard) return
+    // Guard: if these cards were already matched, skip (effect re-ran)
+    if (aCard.matched && bCard.matched) {
+      setFlipped([])
+      return
+    }
+
     lockRef.current = true
     setMoves((m) => m + 1)
-    const [a, b] = flipped
-    if (cards[a]?.emoji === cards[b]?.emoji) {
+
+    if (aCard.emoji === bCard.emoji) {
       setTimeout(() => {
-        setCards((cs) => cs.map((c) => (c.id === a || c.id === b ? { ...c, matched: true, flipped: true } : c)))
+        setCards((cs) =>
+          cs.map((c) =>
+            c.id === a || c.id === b
+              ? { ...c, matched: true, flipped: true }
+              : c,
+          ),
+        )
         setFlipped([])
         lockRef.current = false
-        // Win check
-        if (cards.every((c) => c.matched || c.id === a || c.id === b)) {
+        // Win check after matched state
+        const allMatched = cards.every(
+          (c) => c.matched || c.id === a || c.id === b,
+        )
+        if (allMatched) {
           setTimeout(() => {
             setWon(true)
             setRunning(false)
-            if (moves + 1 < bestMoves || bestMoves === 0) {
-              setBestMoves(moves + 1)
-              localStorage.setItem('memory-moves', String(moves + 1))
+            // Use moves + 1 (the move we just counted)
+            const finalMoves = moves + 1
+            if (finalMoves < bestMoves || bestMoves === 0) {
+              setBestMoves(finalMoves)
+              localStorage.setItem('memory-moves', String(finalMoves))
             }
           }, 400)
         }
       }, 400)
     } else {
       setTimeout(() => {
-        setCards((cs) => cs.map((c) => (c.id === a || c.id === b ? { ...c, flipped: false } : c)))
+        setCards((cs) =>
+          cs.map((c) =>
+            c.id === a || c.id === b ? { ...c, flipped: false } : c,
+          ),
+        )
         setFlipped([])
         lockRef.current = false
       }, 800)
     }
-  }, [flipped, cards, moves, bestMoves])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flipped])
 
   const handleClick = (i: number) => {
     if (lockRef.current || cards[i].flipped || cards[i].matched) return

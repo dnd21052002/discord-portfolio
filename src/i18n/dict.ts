@@ -27,6 +27,7 @@ const vi: Dict = {
   'server.work': 'Work',
   'server.play': 'Play',
   'server.add': 'Thêm server',
+  'server.toggle': 'Danh sách server',
   'server.dm': 'Tin nhắn trực tiếp',
 
   // ── Sidebar ──
@@ -260,6 +261,7 @@ const en: Dict = {
   'server.work': 'Work',
   'server.play': 'Play',
   'server.add': 'Add a Server',
+  'server.toggle': 'Server list',
   'server.dm': 'Direct Messages',
 
   // ── Sidebar ──

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ServerRail, type ServerId } from './components/ServerRail'
+import { ServerRailDrawer } from './components/ServerRailDrawer'
 import { ChannelSidebar } from './components/ChannelSidebar'
 import { TopBar } from './components/TopBar'
 import { MemberList } from './components/MemberList'
@@ -42,6 +43,7 @@ function Shell() {
   const [activeServer, setActiveServer] = useState<ServerId>('me')
   const [theme, setTheme] = useState<ThemeId>('dark')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [serverRailOpen, setServerRailOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth < MOBILE_BP : false,
   )
@@ -120,8 +122,21 @@ function Shell() {
 
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
-      {/* Server rail — ALWAYS visible (works on mobile too) */}
-      <ServerRail activeServer={activeServer} onSelect={handleServerClick} />
+      {/* Server rail — hidden on mobile (drawer replaces it) */}
+      <div
+        className="hidden bg-server-rail lg:flex"
+        style={{ display: isMobile ? 'none' : undefined }}
+      >
+        <ServerRail activeServer={activeServer} onSelect={handleServerClick} />
+      </div>
+
+      {/* Mobile: server rail drawer */}
+      <ServerRailDrawer
+        isOpen={serverRailOpen}
+        onClose={() => setServerRailOpen(false)}
+        onPlay={() => handleServerClick('play')}
+        activeServer={activeServer}
+      />
 
       <ChannelSidebar
         sections={sections}
@@ -141,6 +156,7 @@ function Shell() {
           onThemeChange={setTheme}
           isMobile={isMobile}
           onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenServerRail={() => setServerRailOpen(true)}
           viewLabel={viewLabel}
           onBack={isInGameZone ? handleBack : undefined}
         />

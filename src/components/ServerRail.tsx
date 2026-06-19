@@ -4,6 +4,15 @@ import { useT } from '../i18n/LocaleContext'
 
 export type ServerId = 'me' | 'work' | 'play' | 'add' | 'dm'
 
+type Server = {
+  id: ServerId
+  name: string
+  emoji: string
+  imageUrl?: string
+  isHome?: boolean
+  isAdd?: boolean
+}
+
 export function ServerRail({
   activeServer,
   onSelect,
@@ -34,36 +43,27 @@ export function ServerRail({
         <ServerIcon
           key={s.id}
           server={s}
-          active={activeServer === s.id}
+          isActive={s.id === activeServer}
           onClick={() => onSelect(s.id)}
         />
       ))}
       <div className="my-1 h-px w-8 bg-channel-sidebar" />
       <ServerIcon
         server={{ id: 'dm', name: t('server.dm'), emoji: '💬' }}
-        active={activeServer === 'dm'}
+        isActive={activeServer === 'dm'}
         onClick={() => onSelect('dm')}
       />
     </nav>
   )
 }
 
-type Server = {
-  id: ServerId
-  name: string
-  emoji: string
-  imageUrl?: string
-  isHome?: boolean
-  isAdd?: boolean
-}
-
 function ServerIcon({
   server,
-  active,
+  isActive,
   onClick,
 }: {
   server: Server
-  active: boolean
+  isActive: boolean
   onClick: () => void
 }) {
   const isAdd = server.isAdd
@@ -75,13 +75,13 @@ function ServerIcon({
       onClick={onClick}
       className={[
         'server-icon group',
-        active ? 'active' : '',
+        isActive ? 'active' : '',
         isAdd ? '!text-online' : '',
       ]
         .filter(Boolean)
         .join(' ')}
       aria-label={server.name}
-      aria-current={active ? 'true' : undefined}
+      aria-current={isActive ? 'true' : undefined}
     >
       {server.imageUrl ? (
         <span

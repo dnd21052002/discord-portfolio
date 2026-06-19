@@ -11,6 +11,7 @@ import {
   List,
   Check,
   ArrowLeft,
+  GridFour,
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { SectionId } from '../App'
@@ -49,6 +50,7 @@ export function TopBar({
   onThemeChange,
   isMobile,
   onOpenSidebar,
+  onOpenServerRail,
   viewLabel,
   onBack,
 }: {
@@ -58,6 +60,7 @@ export function TopBar({
   onThemeChange: (t: ThemeId) => void
   isMobile: boolean
   onOpenSidebar: () => void
+  onOpenServerRail?: () => void
   viewLabel?: string
   onBack?: () => void
 }) {
@@ -101,6 +104,18 @@ export function TopBar({
           type="button"
         >
           <ArrowLeft size={20} weight="bold" />
+        </button>
+      )}
+
+      {/* Mobile: Server rail toggle (left of hamburger) */}
+      {!onBack && isMobile && onOpenServerRail && (
+        <button
+          onClick={onOpenServerRail}
+          aria-label={t('server.toggle')}
+          className="rounded p-1.5 text-text-muted transition-colors hover:bg-hover hover:text-white"
+          type="button"
+        >
+          <GridFour size={20} weight="bold" />
         </button>
       )}
 
