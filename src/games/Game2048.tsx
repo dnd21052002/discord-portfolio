@@ -21,75 +21,107 @@ const COLORS: Record<number, string> = {
   8192: 'bg-gradient-to-br from-cyan-400 to-blue-600 text-white',
 }
 
-function emptyGrid(): (Tile | null)[][] {
+type Grid = (Tile | null)[][]
+type Dir = 'left' | 'right' | 'up' | 'down'
+
+function emptyGrid(): Grid {
   return Array.from({ length: SIZE }, () => Array(SIZE).fill(null))
 }
 
-function addRandom(grid: (Tile | null)[][]): (Tile | null)[][] {
+function addRandom(grid: Grid): Grid {
   const empty: [number, number][] = []
   for (let r = 0; r < SIZE; r++)
     for (let c = 0; c < SIZE; c++) if (!grid[r][c]) empty.push([r, c])
   if (empty.length === 0) return grid
   const [r, c] = empty[Math.floor(Math.random() * empty.length)]
   const value = Math.random() < 0.9 ? 2 : 4
-  const next = grid.map((row) => [...row])
+  const next = grid.map((row) => row.slice())
   next[r][c] = { value, id: Date.now() + Math.random(), isNew: true }
   return next
 }
 
-function initGrid(): (Tile | null)[][] {
+function initGrid(): Grid {
   let g = emptyGrid()
   g = addRandom(g)
   g = addRandom(g)
   return g
 }
 
-function move(
-  grid: (Tile | null)[][],
-  dir: 'left' | 'right' | 'up' | 'down',
-): { next: (Tile | null)[][]; score: number; moved: boolean } {
-  const rotated = (g: (Tile | null)[][]) => {
-    if (dir === 'left') return g
-    if (dir === 'right') return g.map((row) => [...row].reverse()).reverse()
-    if (dir === 'down') return g[0].map((_, c) => g.map((row) => row[c]))
-    return g[0].map((_, c) => g.map((row) => row[c]).reverse())
+function gridsEqual(a: Grid, b: Grid): boolean {
+  for (let r = 0; r < SIZE; r++)
+    for (let c = 0; c < SIZE; c++) {
+      const x = a[r][c], y = b[r][c]
+      if ((x === null) !== (y === null)) return false
+      if (x && y && x.id !== y.id) return false
+    }
+  return true
+}
+
+function transpose(g: Grid): Grid {
+  return Array.from({ length: SIZE }, (_, c) => Array.from({ length: SIZE }, (_, r) => g[r][c]))
+}
+
+function reverseRows(g: Grid): Grid {
+  return g.map((row) => row.slice().reverse())
+}
+
+/**
+ * Normalize a move to "left" by rotating the grid, then process,
+ * then rotate back. This way we only write the merge logic once.
+ *
+ * left   : identity
+ * down   : rotate -90°  (transpose + reverse each row) → left → rotate back +90°
+ * right  : flip horizontal (reverse each row) → left → flip back
+ * up     : rotate +90°  (transpose) → left → rotate back -90°
+ */
+function move(grid: Grid, dir: Dir): { next: Grid; score: number; moved: boolean } {
+  // Rotate so the requested direction becomes "left"
+  let g = grid
+  let back: (x: Grid) => Grid = (x) => x
+  if (dir === 'right') {
+    g = reverseRows(g)
+    back = reverseRows
+  } else if (dir === 'up') {
+    g = transpose(g)
+    back = transpose
+  } else if (dir === 'down') {
+    g = reverseRows(transpose(g))
+    back = (x) => transpose(reverseRows(x))
   }
 
-  const back = (g: (Tile | null)[][]) => {
-    if (dir === 'left') return g
-    if (dir === 'right') return g.reverse().map((row) => row.reverse())
-    if (dir === 'down') return g[0].map((_, c) => g.map((row) => row[c]))
-    return g.map((row) => row.slice().reverse())
-  }
-
-  const r = rotated(grid)
+  // Process left: collapse tiles, merge equal pairs
   let score = 0
-  const merged = r.map((row) => {
+  const newG: Grid = g.map((row) => {
     const filtered = row.filter((t): t is Tile => t !== null)
-    const result: (Tile | null)[] = []
+    const out: (Tile | null)[] = []
     for (let i = 0; i < filtered.length; i++) {
       if (i + 1 < filtered.length && filtered[i].value === filtered[i + 1].value) {
         const newVal = filtered[i].value * 2
         score += newVal
-        result.push({ value: newVal, id: Date.now() + Math.random() + i, mergedFrom: [filtered[i].id, filtered[i + 1].id] })
-        i++
+        out.push({
+          value: newVal,
+          id: Date.now() + Math.random() + i,
+          mergedFrom: [filtered[i].id, filtered[i + 1].id],
+        })
+        i++ // skip the merged one
       } else {
-        result.push({ ...filtered[i], isNew: false })
+        out.push({ ...filtered[i], isNew: false })
       }
     }
-    while (result.length < SIZE) result.push(null)
-    return result
+    while (out.length < SIZE) out.push(null)
+    return out
   })
 
-  return { next: back(merged), score, moved: true }
+  const rotated = back(newG)
+  return { next: rotated, score, moved: !gridsEqual(grid, rotated) }
 }
 
-function canMove(grid: (Tile | null)[][]): boolean {
+function canMove(grid: Grid): boolean {
   for (let r = 0; r < SIZE; r++) {
     for (let c = 0; c < SIZE; c++) {
       if (!grid[r][c]) return true
-      if (c < SIZE - 1 && grid[r][c]?.value === grid[r][c + 1]?.value) return true
-      if (r < SIZE - 1 && grid[r][c]?.value === grid[r + 1][c]?.value) return true
+      if (c + 1 < SIZE && grid[r][c] && grid[r][c + 1] && grid[r][c]!.value === grid[r][c + 1]!.value) return true
+      if (r + 1 < SIZE && grid[r][c] && grid[r + 1][c] && grid[r][c]!.value === grid[r + 1][c]!.value) return true
     }
   }
   return false
@@ -97,26 +129,23 @@ function canMove(grid: (Tile | null)[][]): boolean {
 
 export default function Game2048() {
   const { t } = useT()
-  const [grid, setGrid] = useState<(Tile | null)[][]>(() => initGrid())
+  const [grid, setGrid] = useState<Grid>(() => initGrid())
   const [score, setScore] = useState(0)
   const [best, setBest] = useState(() => Number(localStorage.getItem('2048-best') || 0))
   const [over, setOver] = useState(false)
   const [won, setWon] = useState(false)
   const [continuePlay, setContinuePlay] = useState(false)
-  const startRef = useRef(grid)
 
-  const newGame = () => {
-    const g = initGrid()
-    setGrid(g)
-    startRef.current = g
+  const newGame = useCallback(() => {
+    setGrid(initGrid())
     setScore(0)
     setOver(false)
     setWon(false)
     setContinuePlay(false)
-  }
+  }, [])
 
   const makeMove = useCallback(
-    (dir: 'left' | 'right' | 'up' | 'down') => {
+    (dir: Dir) => {
       if (over || (won && !continuePlay)) return
       setGrid((prev) => {
         const { next, score: gained, moved } = move(prev, dir)
@@ -132,16 +161,15 @@ export default function Game2048() {
           })
         }
         const withNew = addRandom(next)
-        if (!canMove(withNew)) {
-          setTimeout(() => setOver(true), 200)
-        }
         // Win check
         for (const row of withNew) {
           for (const tile of row) {
-            if (tile && tile.value === 2048 && !won) {
-              setWon(true)
-            }
+            if (tile && tile.value === 2048 && !won) setWon(true)
           }
+        }
+        // Game over check (after small delay so we render the last move first)
+        if (!canMove(withNew)) {
+          window.setTimeout(() => setOver(true), 200)
         }
         return withNew
       })
@@ -153,10 +181,10 @@ export default function Game2048() {
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       const k = e.key.toLowerCase()
-      if (k === 'arrowleft' || k === 'a') makeMove('left')
-      else if (k === 'arrowright' || k === 'd') makeMove('right')
-      else if (k === 'arrowup' || k === 'w') makeMove('up')
-      else if (k === 'arrowdown' || k === 's') makeMove('down')
+      if (k === 'arrowleft' || k === 'a') { e.preventDefault(); makeMove('left') }
+      else if (k === 'arrowright' || k === 'd') { e.preventDefault(); makeMove('right') }
+      else if (k === 'arrowup' || k === 'w') { e.preventDefault(); makeMove('up') }
+      else if (k === 'arrowdown' || k === 's') { e.preventDefault(); makeMove('down') }
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
@@ -217,15 +245,15 @@ export default function Game2048() {
               return (
                 <div
                   key={`${r}-${c}`}
-                  className="flex h-16 w-16 items-center justify-center rounded-lg bg-channel-sidebar/40 text-sm font-bold sm:h-20 sm:w-20 sm:text-base"
+                  className="relative flex h-16 w-16 items-center justify-center rounded-lg bg-channel-sidebar/40 text-sm font-bold sm:h-20 sm:w-20 sm:text-base"
                 >
                   <AnimatePresence>
                     {tile && (
                       <motion.div
                         key={tile.id}
-                        initial={{ scale: tile.isNew ? 0 : 1.2, opacity: tile.isNew ? 0 : 1 }}
+                        initial={{ scale: tile.isNew ? 0 : 1, opacity: tile.isNew ? 0 : 1 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.15 }}
                         className={`absolute inset-1 flex items-center justify-center rounded-md ${COLORS[tile.value] || 'bg-blurple text-white'}`}
                       >
