@@ -99,6 +99,19 @@ const vi: Dict = {
   'time.todayAt': 'Hôm nay lúc',
   'time.now': 'nay',
 
+  // ── Game ──
+  'game.controls': 'Dùng phím mũi tên hoặc WASD để di chuyển',
+  'game.start': 'Bắt đầu',
+  'game.paused': 'Tạm dừng',
+  'game.resume': 'Tiếp tục',
+  'game.over': 'Game Over!',
+  'game.score': 'Điểm',
+  'game.newRecord': 'Kỷ lục mới!',
+  'game.restart': 'Chơi lại',
+  'game.or': 'hoặc',
+  'game.pauseHint': 'tạm dừng',
+  'game.swipe': 'vuốt trên mobile',
+
   // ── Section: #welcome ──
   'welcome.greeting': 'Hey 👋 chào mừng tới',
   'welcome.channelLabel': '— đây là',
@@ -263,6 +276,19 @@ const en: Dict = {
   // ── Time / timestamps ──
   'time.todayAt': 'Today at',
   'time.now': 'present',
+
+  // ── Game ──
+  'game.controls': 'Use arrow keys or WASD to move',
+  'game.start': 'Start',
+  'game.paused': 'Paused',
+  'game.resume': 'Resume',
+  'game.over': 'Game Over!',
+  'game.score': 'Score',
+  'game.newRecord': 'New record!',
+  'game.restart': 'Play again',
+  'game.or': 'or',
+  'game.pauseHint': 'pause',
+  'game.swipe': 'swipe on mobile',
 
   // ── Section: #welcome ──
   'welcome.greeting': 'Hey 👋 welcome to',

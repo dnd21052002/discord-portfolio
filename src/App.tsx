@@ -5,6 +5,7 @@ import { ChannelSidebar } from './components/ChannelSidebar'
 import { TopBar } from './components/TopBar'
 import { MemberList } from './components/MemberList'
 import { MainArea } from './components/MainArea'
+import { Game } from './sections/Game'
 import { LocaleProvider, useT } from './i18n/LocaleContext'
 
 export type SectionId =
@@ -16,6 +17,7 @@ export type SectionId =
   | 'contact'
 
 export type ThemeId = 'dark' | 'light' | 'dracula' | 'nord'
+export type View = SectionId | 'game'
 
 const sectionKeyMap: Record<SectionId, string> = {
   welcome: 'channel.welcome',
@@ -32,6 +34,7 @@ const MOBILE_BP = 1024 // lg breakpoint
 function Shell() {
   const { t } = useT()
   const [active, setActive] = useState<SectionId>('welcome')
+  const [view, setView] = useState<View>('welcome')
   const [theme, setTheme] = useState<ThemeId>('dark')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(
@@ -51,23 +54,30 @@ function Shell() {
     localStorage.setItem(THEME_KEY, theme)
   }, [theme])
 
-  // Track viewport for responsive behaviour
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < MOBILE_BP)
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
   }, [])
 
-  // Auto-close mobile sidebar when switching channel
   const handleSelect = (id: SectionId) => {
     setActive(id)
+    setView(id)
     if (isMobile) {
       setSidebarOpen(false)
-      // Scroll main content to top on mobile (drawer close + new content)
       requestAnimationFrame(() => {
         mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
       })
     }
+  }
+
+  const handlePlay = () => {
+    setView('game')
+    if (isMobile) setSidebarOpen(false)
+  }
+
+  const handleBackFromGame = () => {
+    setView(active)
   }
 
   const sections = (['welcome', 'about', 'projects', 'tech', 'experience', 'contact'] as SectionId[]).map(
@@ -76,15 +86,13 @@ function Shell() {
 
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
-      {/* Server rail — hidden on mobile (inline style overrides Tailwind lg:block) */}
       <div
         className="hidden bg-server-rail lg:block"
         style={{ display: isMobile ? 'none' : undefined }}
       >
-        <ServerRail />
+        <ServerRail onPlay={handlePlay} />
       </div>
 
-      {/* Channel sidebar — drawer on mobile, fixed on desktop */}
       <ChannelSidebar
         sections={sections}
         active={active}
@@ -94,15 +102,16 @@ function Shell() {
         isMobile={isMobile}
       />
 
-      {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
-          active={active}
+          active={view === 'game' ? 'welcome' : active}
           sections={sections}
           theme={theme}
           onThemeChange={setTheme}
           isMobile={isMobile}
           onOpenSidebar={() => setSidebarOpen(true)}
+          viewLabel={view === 'game' ? '🐍 snake' : undefined}
+          onBack={view === 'game' ? handleBackFromGame : undefined}
         />
         <div className="flex min-h-0 flex-1">
           <main
@@ -112,14 +121,18 @@ function Shell() {
           >
             <AnimatePresence mode="wait">
               <motion.div
-                key={active}
+                key={view}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8"
+                className={
+                  view === 'game'
+                    ? 'flex min-h-full items-center justify-center px-4 py-6'
+                    : 'mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8'
+                }
               >
-                <MainArea active={active} />
+                {view === 'game' ? <Game /> : <MainArea active={active} />}
               </motion.div>
             </AnimatePresence>
           </main>

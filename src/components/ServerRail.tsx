@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { profile } from '../data/profile'
 import { useT } from '../i18n/LocaleContext'
 
-export function ServerRail() {
+export function ServerRail({ onPlay }: { onPlay?: () => void }) {
   const { t } = useT()
   const servers: Server[] = [
     {
@@ -14,7 +14,7 @@ export function ServerRail() {
       isHome: true,
     },
     { id: 'work', name: t('server.work'), emoji: '🛠️' },
-    { id: 'play', name: t('server.play'), emoji: '🎮' },
+    { id: 'play', name: t('server.play'), emoji: '🎮', onClick: onPlay },
     { id: 'add', name: t('server.add'), emoji: '+', isAdd: true },
   ]
 
@@ -42,6 +42,7 @@ type Server = {
   active?: boolean
   isHome?: boolean
   isAdd?: boolean
+  onClick?: () => void
 }
 
 function ServerIcon({ server }: { server: Server }) {
@@ -51,6 +52,7 @@ function ServerIcon({ server }: { server: Server }) {
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      onClick={server.onClick}
       className={[
         'server-icon group',
         server.active ? 'active' : '',

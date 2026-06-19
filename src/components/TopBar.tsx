@@ -10,6 +10,7 @@ import {
   Globe,
   List,
   Check,
+  ArrowLeft,
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { SectionId } from '../App'
@@ -48,6 +49,8 @@ export function TopBar({
   onThemeChange,
   isMobile,
   onOpenSidebar,
+  viewLabel,
+  onBack,
 }: {
   active: SectionId
   sections: Section[]
@@ -55,6 +58,8 @@ export function TopBar({
   onThemeChange: (t: ThemeId) => void
   isMobile: boolean
   onOpenSidebar: () => void
+  viewLabel?: string
+  onBack?: () => void
 }) {
   const { t, locale, setLocale } = useT()
   const section = sections.find((s) => s.id === active)
@@ -87,8 +92,20 @@ export function TopBar({
 
   return (
     <header className="channel-header">
+      {/* Back button — only in game view */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          aria-label="Back"
+          className="rounded p-1.5 text-text-muted transition-colors hover:bg-hover hover:text-white"
+          type="button"
+        >
+          <ArrowLeft size={20} weight="bold" />
+        </button>
+      )}
+
       {/* Hamburger — only mobile */}
-      {isMobile && (
+      {!onBack && isMobile && (
         <button
           onClick={onOpenSidebar}
           aria-label={t('common.members')}
@@ -100,7 +117,7 @@ export function TopBar({
       )}
 
       {/* Mobile: small avatar of owner (acts as "server" icon) */}
-      {isMobile && (
+      {!onBack && isMobile && (
         <div
           className="h-6 w-6 shrink-0 overflow-hidden rounded-full"
           style={{
@@ -114,11 +131,11 @@ export function TopBar({
 
       <Hash size={22} weight="bold" className="text-text-dim" />
       <h1 className="truncate text-base font-semibold text-text-primary">
-        {section?.label}
+        {viewLabel ?? section?.label}
       </h1>
       <span className="mx-3 hidden h-6 w-px shrink-0 bg-border-strong sm:inline-block" />
       <p className="hidden truncate text-sm text-text-muted sm:block">
-        {t(descKey[active])}
+        {viewLabel ? t('game.controls') : t(descKey[active])}
       </p>
 
       <div className="ml-auto flex shrink-0 items-center gap-1 text-text-muted">
