@@ -133,7 +133,7 @@ function MemberGroup({
           >
             <div
               className="member-avatar"
-              style={{ background: m.cssVar }}
+              style={{ backgroundColor: m.cssVar, color: m.onColor }}
             >
               {m.name.charAt(0)}
               <span className={`member-status-dot ${status}`} />
