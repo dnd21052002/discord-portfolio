@@ -135,7 +135,7 @@ function MemberGroup({
               className="member-avatar"
               style={{ backgroundColor: m.cssVar, color: m.onColor }}
             >
-              {m.name.charAt(0)}
+              <m.Icon size={16} aria-label={m.name} />
               <span className={`member-status-dot ${status}`} />
             </div>
             <span className="truncate" style={{ color: m.onColor }}>

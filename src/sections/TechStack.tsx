@@ -78,7 +78,7 @@ function SkillRow({
           color: skill.onColor,
         }}
       >
-        {skill.name.charAt(0)}
+        <skill.Icon size={20} aria-label={skill.name} />
         <span className={`member-status-dot ${status}`} />
       </div>
       <span
