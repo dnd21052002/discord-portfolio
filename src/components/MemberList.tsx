@@ -25,9 +25,7 @@ export function UserBar() {
               : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundColor: profile.imageUrl
-              ? 'transparent'
-              : 'var(--color-blurple)',
+            backgroundColor: profile.imageUrl ? 'transparent' : undefined,
           }}
           aria-label={profile.name}
         >
