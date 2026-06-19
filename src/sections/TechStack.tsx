@@ -73,7 +73,7 @@ function SkillRow({
     >
       <div
         className="member-avatar !h-8 !w-8"
-        style={{ background: skill.cssVar }}
+        style={{ background: skill.cssVar, color: skill.onColor }}
       >
         {skill.name.charAt(0)}
         <span className={`member-status-dot ${status}`} />

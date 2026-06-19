@@ -39,16 +39,27 @@
 
   /* Role colors (tech stack) */
   --color-role-java: #f89820;
+  --color-on-java: #1a1a1a;
   --color-role-spring: #6db33f;
+  --color-on-spring: #ffffff;
   --color-role-react: #61dafb;
+  --color-on-react: #1a1a1a;
   --color-role-typescript: #3178c6;
+  --color-on-typescript: #ffffff;
   --color-role-tailwind: #38bdf8;
-  --color-role-threejs: #ffffff;
-  --color-role-nextjs: #ffffff;
+  --color-on-tailwind: #1a1a1a;
+  --color-role-threejs: #000000;
+  --color-on-threejs: #ffffff;
+  --color-role-nextjs: #000000;
+  --color-on-nextjs: #ffffff;
   --color-role-flutter: #54c5f8;
+  --color-on-flutter: #1a1a1a;
   --color-role-python: #3776ab;
+  --color-on-python: #ffffff;
   --color-role-docker: #2496ed;
+  --color-on-docker: #ffffff;
   --color-role-postgres: #336791;
+  --color-on-postgres: #ffffff;
 
   /* Typography */
   --font-display: "Geist", "gg sans", "Inter", system-ui, sans-serif;
