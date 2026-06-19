@@ -16,6 +16,7 @@ import type { SectionId } from '../App'
 import type { ThemeId } from '../App'
 import { useT } from '../i18n/LocaleContext'
 import { profile } from '../data/profile'
+import { VNFlag, GBFlag } from './Flags'
 
 type Section = { id: SectionId; label: string }
 
@@ -26,9 +27,9 @@ const themes: { id: ThemeId; key: string; preview: string }[] = [
   { id: 'nord', key: 'theme.nord', preview: '#434c5e' },
 ]
 
-const langs: { id: 'vi' | 'en'; key: string; flag: string }[] = [
-  { id: 'vi', key: 'lang.vi', flag: '🇻🇳' },
-  { id: 'en', key: 'lang.en', flag: '🇬🇧' },
+const langs: { id: 'vi' | 'en'; key: string; Flag: React.FC<{ size?: number }> }[] = [
+  { id: 'vi', key: 'lang.vi', Flag: VNFlag },
+  { id: 'en', key: 'lang.en', Flag: GBFlag },
 ]
 
 const descKey: Record<SectionId, string> = {
@@ -168,9 +169,7 @@ export function TopBar({
                         ].join(' ')}
                         type="button"
                       >
-                        <span className="text-lg" aria-hidden>
-                          {l.flag}
-                        </span>
+                        <l.Flag size={18} />
                         <span className="flex-1">{t(l.key)}</span>
                         {locale === l.id && (
                           <Check size={14} weight="bold" className="text-blurple" />

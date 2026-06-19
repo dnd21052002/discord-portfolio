@@ -90,6 +90,11 @@
   --color-text-dim: #5c626c;
   --color-text-faint: #80848e;
   --color-text-placeholder: #99a1ab;
+
+  /* Name text colors for skills — dark variants of role colors
+     so they're readable on the light page background */
+  --color-on-nextjs: #000000;
+  --color-on-threejs: #000000;
 }
 
 /* Dracula (purple/pink dark) */
