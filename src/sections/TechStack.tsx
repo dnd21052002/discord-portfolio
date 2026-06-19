@@ -81,10 +81,7 @@ function SkillRow({
         <skill.Icon size={20} aria-label={skill.name} />
         <span className={`member-status-dot ${status}`} />
       </div>
-      <span
-        className="truncate font-medium"
-        style={{ color: skill.onColor }}
-      >
+      <span className="truncate font-medium text-text-body">
         {skill.name}
       </span>
       <span className="ml-auto text-[11px] uppercase tracking-wide text-text-dim">

@@ -138,7 +138,7 @@ function MemberGroup({
               <m.Icon size={16} aria-label={m.name} />
               <span className={`member-status-dot ${status}`} />
             </div>
-            <span className="truncate" style={{ color: m.onColor }}>
+            <span className="truncate text-text-body">
               {m.name}
             </span>
           </li>
