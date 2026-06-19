@@ -138,7 +138,7 @@ function MemberGroup({
               {m.name.charAt(0)}
               <span className={`member-status-dot ${status}`} />
             </div>
-            <span className="truncate" style={{ color: m.cssVar }}>
+            <span className="truncate" style={{ color: m.onColor }}>
               {m.name}
             </span>
           </li>
