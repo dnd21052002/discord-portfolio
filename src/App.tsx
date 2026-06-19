@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ServerRail } from './components/ServerRail'
+import { ServerRail, type ServerId } from './components/ServerRail'
 import { ChannelSidebar } from './components/ChannelSidebar'
 import { TopBar } from './components/TopBar'
 import { MemberList } from './components/MemberList'
@@ -39,6 +39,7 @@ function Shell() {
   const { t } = useT()
   const [active, setActive] = useState<SectionId>('welcome')
   const [view, setView] = useState<View>('welcome')
+  const [activeServer, setActiveServer] = useState<ServerId>('me')
   const [theme, setTheme] = useState<ThemeId>('dark')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(
@@ -62,19 +63,38 @@ function Shell() {
     return () => window.removeEventListener('resize', h)
   }, [])
 
+  // Choose which server is active based on view
+  useEffect(() => {
+    if (view === 'hub' || (typeof view === 'string' && view.startsWith('game:'))) {
+      setActiveServer('play')
+    } else {
+      setActiveServer('me')
+    }
+  }, [view])
+
   const handleSelect = (id: SectionId) => {
     setActive(id)
     setView(id)
+    setActiveServer('me')
     if (isMobile) {
       setSidebarOpen(false)
       requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
     }
   }
 
-  const handlePlay = () => {
-    setView('hub')
-    if (isMobile) setSidebarOpen(false)
-    requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
+  const handleServerClick = (id: ServerId) => {
+    setActiveServer(id)
+    if (id === 'play') {
+      setView('hub')
+      if (isMobile) setSidebarOpen(false)
+      requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' }))
+    } else if (id === 'me') {
+      setView(active)
+      if (isMobile) setSidebarOpen(false)
+    } else {
+      // work / add / dm — visual only for now
+      if (isMobile) setSidebarOpen(false)
+    }
   }
 
   const handleGameSelect = (id: GameId) => {
@@ -87,6 +107,7 @@ function Shell() {
       setView('hub')
     } else {
       setView(active)
+      setActiveServer('me')
     }
   }
 
@@ -99,12 +120,8 @@ function Shell() {
 
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
-      <div
-        className="hidden bg-server-rail lg:block"
-        style={{ display: isMobile ? 'none' : undefined }}
-      >
-        <ServerRail onPlay={handlePlay} />
-      </div>
+      {/* Server rail — ALWAYS visible (works on mobile too) */}
+      <ServerRail activeServer={activeServer} onSelect={handleServerClick} />
 
       <ChannelSidebar
         sections={sections}

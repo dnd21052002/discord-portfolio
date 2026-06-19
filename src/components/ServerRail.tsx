@@ -2,7 +2,15 @@ import { motion } from 'motion/react'
 import { profile } from '../data/profile'
 import { useT } from '../i18n/LocaleContext'
 
-export function ServerRail({ onPlay }: { onPlay?: () => void }) {
+export type ServerId = 'me' | 'work' | 'play' | 'add' | 'dm'
+
+export function ServerRail({
+  activeServer,
+  onSelect,
+}: {
+  activeServer: ServerId
+  onSelect: (id: ServerId) => void
+}) {
   const { t } = useT()
   const servers: Server[] = [
     {
@@ -10,11 +18,10 @@ export function ServerRail({ onPlay }: { onPlay?: () => void }) {
       name: t('server.home'),
       emoji: 'N',
       imageUrl: profile.imageUrl,
-      active: true,
       isHome: true,
     },
     { id: 'work', name: t('server.work'), emoji: '🛠️' },
-    { id: 'play', name: t('server.play'), emoji: '🎮', onClick: onPlay },
+    { id: 'play', name: t('server.play'), emoji: '🎮' },
     { id: 'add', name: t('server.add'), emoji: '+', isAdd: true },
   ]
 
@@ -24,43 +31,57 @@ export function ServerRail({ onPlay }: { onPlay?: () => void }) {
       className="flex w-[72px] shrink-0 flex-col items-center gap-2 overflow-y-auto bg-server-rail py-3"
     >
       {servers.map((s) => (
-        <ServerIcon key={s.id} server={s} />
+        <ServerIcon
+          key={s.id}
+          server={s}
+          active={activeServer === s.id}
+          onClick={() => onSelect(s.id)}
+        />
       ))}
       <div className="my-1 h-px w-8 bg-channel-sidebar" />
       <ServerIcon
         server={{ id: 'dm', name: t('server.dm'), emoji: '💬' }}
+        active={activeServer === 'dm'}
+        onClick={() => onSelect('dm')}
       />
     </nav>
   )
 }
 
 type Server = {
-  id: string
+  id: ServerId
   name: string
   emoji: string
   imageUrl?: string
-  active?: boolean
   isHome?: boolean
   isAdd?: boolean
-  onClick?: () => void
 }
 
-function ServerIcon({ server }: { server: Server }) {
+function ServerIcon({
+  server,
+  active,
+  onClick,
+}: {
+  server: Server
+  active: boolean
+  onClick: () => void
+}) {
   const isAdd = server.isAdd
 
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={server.onClick}
+      onClick={onClick}
       className={[
         'server-icon group',
-        server.active ? 'active' : '',
+        active ? 'active' : '',
         isAdd ? '!text-online' : '',
       ]
         .filter(Boolean)
         .join(' ')}
       aria-label={server.name}
+      aria-current={active ? 'true' : undefined}
     >
       {server.imageUrl ? (
         <span
