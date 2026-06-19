@@ -209,24 +209,25 @@
     @apply flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm transition-colors;
     color: var(--color-text-dim);
   }
-  .channel-item:hover {
-    background: var(--color-hover);
-    color: var(--color-text-body);
-  }
   .channel-item.active {
     background: var(--color-active);
     color: var(--color-text-primary);
   }
   .channel-item .icon { color: var(--color-text-dim); }
-  .channel-item:hover .icon,
   .channel-item.active .icon { color: var(--color-text-muted); }
 
   /* Message bubble */
   .message {
     @apply flex gap-4 px-4 py-0.5 transition-colors;
   }
-  .message:hover {
-    background: color-mix(in srgb, var(--color-hover) 70%, transparent);
+  /* Only show hover state on devices with a real mouse */
+  @media (hover: hover) {
+    .message:hover {
+      background: color-mix(in srgb, var(--color-hover) 70%, transparent);
+    }
+    .channel-item:hover {
+      background: var(--color-hover);
+    }
   }
   .message-avatar {
     @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-semibold text-white;
