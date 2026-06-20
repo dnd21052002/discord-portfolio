@@ -8,13 +8,22 @@ type Board = Cell[] // length 81
 type Status = 'playing' | 'won' | 'over'
 
 // Minimum empties per digit (1-9) by difficulty.
-// Easy:   every digit must have ≥ 4 empty cells → max 5 givens per digit → ~45 givens
-// Medium: every digit must have ≥ 5 empty cells → max 4 givens per digit → ~36 givens
-// Hard:   every digit must have ≥ 6 empty cells → max 3 givens per digit → ~27 givens
+// Easy:   every digit must have ≥ 4 empty cells → max 5 givens per digit
+// Medium: every digit must have ≥ 5 empty cells → max 4 givens per digit
+// Hard:   every digit must have ≥ 6 empty cells → max 3 givens per digit
 const MIN_EMPTIES_PER_DIGIT: Record<Difficulty, number> = {
   easy: 4,
   medium: 5,
   hard: 6,
+}
+// Target total givens per puzzle (lower bound = harder).
+// Below this, carving stops even if more cells could be removed.
+// This prevents puzzles that are trivially easy because too many
+// cells were stripped (still unique solution, but no challenge).
+const TARGET_TOTAL_GIVENS: Record<Difficulty, number> = {
+  easy: 40,   // ~41 empties — comfortable
+  medium: 32, // ~49 empties — moderate
+  hard: 26,   // ~55 empties — challenging
 }
 const MAX_MISTAKES = 3
 
@@ -122,11 +131,12 @@ function countDigits(board: Board): number[] {
   return c
 }
 
-// ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties ──
-// ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties ──
+// ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties
+// and a total givens lower bound (stop carving early if puzzle already hard enough) ──
 function carvePuzzle(
   solved: Board,
   minEmptiesPerDigit: number,
+  targetTotalGivens: number,
   rng: () => number,
 ): Board {
   const puzzle = [...solved]
@@ -143,7 +153,17 @@ function carvePuzzle(
     return givensPerDigit[d - 1] > 9 - minEmptiesPerDigit
   }
 
+  // Helper: total remaining givens
+  const totalGivens = (): number => {
+    let c = 0
+    for (const v of puzzle) if (v !== null) c++
+    return c
+  }
+
   for (const i of positions) {
+    // Early stop: already at the target givens count — puzzle hard enough
+    if (totalGivens() <= targetTotalGivens) break
+
     const digit = puzzle[i]
     if (digit === null) continue
     if (!mayRemoveDigit(digit)) continue
@@ -223,19 +243,38 @@ function makePuzzle(diff: Difficulty): Puzzle {
   // Retry a few times if carving fails to reach the digit-empties target.
   let best: { puzzle: Board; solution: Board } | null = null
   for (let attempt = 0; attempt < 3; attempt++) {
-    const carved = carvePuzzle(solution, MIN_EMPTIES_PER_DIGIT[diff], rng)
+    const carved = carvePuzzle(
+      solution,
+      MIN_EMPTIES_PER_DIGIT[diff],
+      TARGET_TOTAL_GIVENS[diff],
+      rng,
+    )
     // Defensive verification — givens MUST be valid (subset of valid solution).
     if (validateGivens(carved, solution)) {
       best = { puzzle: carved, solution }
       break
     }
   }
-  if (!best) best = { puzzle: carvePuzzle(solution, MIN_EMPTIES_PER_DIGIT[diff], rng), solution }
+  if (!best) {
+    best = {
+      puzzle: carvePuzzle(
+        solution,
+        MIN_EMPTIES_PER_DIGIT[diff],
+        TARGET_TOTAL_GIVENS[diff],
+        rng,
+      ),
+      solution,
+    }
+  }
   // Log actual stats for debugging difficulty calibration.
   if (typeof window !== 'undefined' && (window as any).__sudokuDebug) {
     const empties = best.puzzle.filter((c) => c === null).length
     const counts = countDigits(best.puzzle)
-    console.log(`[sudoku ${diff}] givens=${81 - empties} empties=${empties} perDigit=${counts.map((c, i) => `${i + 1}:${9 - c}`).join(' ')}`)
+    console.log(
+      `[sudoku ${diff}] givens=${81 - empties} empties=${empties} perDigit=${counts
+        .map((c, i) => `${i + 1}:${9 - c}`)
+        .join(' ')}`,
+    )
   }
   return best
 }
