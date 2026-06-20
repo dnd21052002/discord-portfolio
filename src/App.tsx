@@ -34,6 +34,13 @@ const gameTitleKeys: Record<GameId, string> = {
   '2048': 'gamehub.2048.title',
   sudoku: 'gamehub.sudoku.title',
 }
+const gameIcons: Record<GameId, string> = {
+  snake: '🐍',
+  tictactoe: '❌',
+  memory: '🧠',
+  '2048': '🔢',
+  sudoku: '🧩',
+}
 
 const THEME_KEY = 'ngocdiep-portfolio-theme'
 const MOBILE_BP = 1024
@@ -120,7 +127,9 @@ function Shell() {
 
   const isInGameZone = view === 'hub' || (typeof view === 'string' && view.startsWith('game:'))
   const currentGameId = typeof view === 'string' && view.startsWith('game:') ? view.slice(5) as GameId : null
-  const viewLabel = currentGameId ? `🐍 ${t(gameTitleKeys[currentGameId])}` : view === 'hub' ? `🎮 ${t('gamehub.title')}` : undefined
+  const viewLabel = currentGameId
+    ? `${gameIcons[currentGameId]} ${t(gameTitleKeys[currentGameId])}`
+    : view === 'hub' ? `🎮 ${t('gamehub.title')}` : undefined
 
   return (
     <div className="flex h-dvh w-screen overflow-hidden bg-main text-text-body">
