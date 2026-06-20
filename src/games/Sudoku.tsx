@@ -8,13 +8,13 @@ type Board = Cell[] // length 81
 type Status = 'playing' | 'won' | 'over'
 
 // Minimum empties per digit (1-9) by difficulty.
-// Easy:   every digit must have ≥ 3 empty cells → max 6 givens per digit
-// Medium: every digit must have ≥ 4 empty cells → max 5 givens per digit
-// Hard:   every digit must have ≥ 5 empty cells → max 4 givens per digit
+// Easy:   every digit must have ≥ 4 empty cells → max 5 givens per digit → ~45 givens
+// Medium: every digit must have ≥ 5 empty cells → max 4 givens per digit → ~36 givens
+// Hard:   every digit must have ≥ 6 empty cells → max 3 givens per digit → ~27 givens
 const MIN_EMPTIES_PER_DIGIT: Record<Difficulty, number> = {
-  easy: 3,
-  medium: 4,
-  hard: 5,
+  easy: 4,
+  medium: 5,
+  hard: 6,
 }
 const MAX_MISTAKES = 3
 
