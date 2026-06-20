@@ -171,6 +171,7 @@ const vi: Dict = {
   'sudoku.playAgain': 'Chơi lại',
   'sudoku.giveUp': 'Xem đáp án',
   'sudoku.gameOver': 'Thua rồi!',
+  'sudoku.retry': 'Thử lại',
   'sudoku.conflicts': '3 lỗi — hết lượt',
   'sudoku.erase': 'Xóa ô',
 
@@ -427,6 +428,7 @@ const en: Dict = {
   'sudoku.playAgain': 'Play again',
   'sudoku.giveUp': 'Show solution',
   'sudoku.gameOver': 'Game over!',
+  'sudoku.retry': 'Retry',
   'sudoku.conflicts': '3 mistakes — out of moves',
   'sudoku.erase': 'Erase',
 
