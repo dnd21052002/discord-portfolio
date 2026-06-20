@@ -273,10 +273,11 @@ export default function Sudoku() {
           className="relative rounded-xl border-2 border-blurple/40 bg-server-rail p-2 shadow-2xl shadow-black/40"
           style={{ aspectRatio: '1 / 1' }}
         >
-          {/* 9×9 grid with thin separator between cells (1px) */}
-          <div className="relative h-full w-full overflow-hidden rounded-md bg-border">
-            <div className="grid h-full w-full grid-cols-9 gap-px">
+          {/* 9×9 grid — each cell has its own border for clear separation */}
+          <div className="relative h-full w-full overflow-hidden rounded-md bg-channel-sidebar/50">
+            <div className="grid h-full w-full grid-cols-9">
               {displayBoard.map((cell, i) => {
+                const r = row(i), c = col(i)
                 const isSelected = selected === i
                 const isHighlighted = highlights.has(i)
                 const isGiven = puzzleData?.puzzle[i] !== null
@@ -287,7 +288,7 @@ export default function Sudoku() {
                     key={i}
                     onClick={() => setSelected(i)}
                     type="button"
-                    className={`relative flex items-center justify-center text-base font-semibold transition-colors sm:text-lg ${
+                    className={`relative flex items-center justify-center ${c < 8 ? 'border-r' : ''} ${r < 8 ? 'border-b' : ''} border-channel-sidebar/60 text-base font-semibold transition-colors sm:text-lg ${
                       conflict
                         ? '!bg-dnd/30 !text-dnd'
                         : isSelected
