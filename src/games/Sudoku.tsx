@@ -116,37 +116,46 @@ export default function Sudoku() {
       setStatus('won')
     }
   }, [board, status, giveUp, puzzleData])
-
   const placeDigit = useCallback((n: number) => {
-    if (status !== 'playing' || giveUp) return
-    if (selected === null) return
-    if (puzzleData?.puzzle[selected] !== null) return
-    setBoard((prev) => {
-      const next = [...prev]
-      if (next[selected] === n) return prev
+      if (status !== 'playing' || giveUp) return
+      if (selected === null) return
+      if (puzzleData?.puzzle[selected] !== null) return
+      if (board[selected] === n) return
+
+      const was = board[selected]
+      const solutionAt = puzzleData?.solution[selected]
+
+      const next = [...board]
       next[selected] = n
-      return next
-    })
-  }, [selected, status, giveUp, puzzleData])
+      setBoard(next)
 
-  const clearCell = useCallback(() => {
-    if (status !== 'playing' || giveUp) return
-    if (selected === null) return
-    if (puzzleData?.puzzle[selected] !== null) return
-    setBoard((prev) => {
-      if (prev[selected] === null) return prev
-      const next = [...prev]
-      next[selected] = null
-      return next
-    })
-  }, [selected, status, giveUp, puzzleData])
+      // Count mistake only when:
+      // 1. New digit is wrong (n ≠ solutionAt)
+      // 2. AND conflicts with at least one peer (Sudoku rule)
+      // 3. AND cell wasn't already in a wrong state (was === null OR was === solutionAt)
+      // This way: 1 user input = max 1 mistake. Fixing one mistake with another
+      // wrong digit doesn't double-count.
+      if (n !== solutionAt && hasConflict(next, selected)) {
+        const wasCorrect = was === null || was === solutionAt
+        if (wasCorrect) {
+          setMistakes((m) => m + 1)
+        }
+      }
+    }, [board, selected, status, giveUp, puzzleData])
 
-  useEffect(() => {
-    if (status !== 'playing' || giveUp || !puzzleData) return
-    const current = board.filter((_, i) => board[i] !== null && hasConflict(board, i)).length
-    if (current > mistakes) setMistakes(current)
-  }, [board, mistakes, status, giveUp, puzzleData])
+    const clearCell = useCallback(() => {
+      if (status !== 'playing' || giveUp) return
+      if (selected === null) return
+      if (puzzleData?.puzzle[selected] !== null) return
+      setBoard((prev) => {
+        if (prev[selected] === null) return prev
+        const next = [...prev]
+        next[selected] = null
+        return next
+      })
+    }, [selected, status, giveUp, puzzleData])
 
+  // Game over when mistakes reach max
   useEffect(() => {
     if (mistakes >= MAX_MISTAKES && status === 'playing') setStatus('over')
   }, [mistakes, status])
