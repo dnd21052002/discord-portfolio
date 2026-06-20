@@ -201,7 +201,7 @@ function Shell() {
                     {currentGameId === 'sudoku' && <Sudoku />}
                   </Suspense>
                 ) : (
-                  <MainArea active={active} />
+                  <MainArea active={view as SectionId} onNavigate={setView} />
                 )}
               </motion.div>
             </AnimatePresence>
