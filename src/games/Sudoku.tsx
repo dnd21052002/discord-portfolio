@@ -207,8 +207,42 @@ function makePuzzle(diff: Difficulty): Puzzle {
   const seed = Date.now() + Math.floor(Math.random() * 1e9)
   const rng = mulberry32(seed)
   const solution = generateSolved(rng)
-  const puzzle = carvePuzzle(solution, MIN_EMPTIES_PER_DIGIT[diff], rng)
-  return { puzzle, solution }
+  // Retry a few times if carving fails to reach the digit-empties target.
+  let best: { puzzle: Board; solution: Board } | null = null
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const carved = carvePuzzle(solution, MIN_EMPTIES_PER_DIGIT[diff], rng)
+    // Defensive verification — givens MUST be valid (subset of valid solution).
+    if (validateGivens(carved, solution)) {
+      best = { puzzle: carved, solution }
+      break
+    }
+  }
+  if (!best) best = { puzzle: carvePuzzle(solution, MIN_EMPTIES_PER_DIGIT[diff], rng), solution }
+  // Log actual stats for debugging difficulty calibration.
+  if (typeof window !== 'undefined' && (window as any).__sudokuDebug) {
+    const empties = best.puzzle.filter((c) => c === null).length
+    const counts = countDigits(best.puzzle)
+    console.log(`[sudoku ${diff}] givens=${81 - empties} empties=${empties} perDigit=${counts.map((c, i) => `${i + 1}:${9 - c}`).join(' ')}`)
+  }
+  return best
+}
+
+function validateGivens(puzzle: Board, solution: Board): boolean {
+  // 1. Every non-null cell must match the solution.
+  for (let i = 0; i < 81; i++) {
+    if (puzzle[i] !== null && puzzle[i] !== solution[i]) return false
+  }
+  // 2. No two givens in the same row/col/box may hold the same digit.
+  for (let i = 0; i < 81; i++) {
+    if (puzzle[i] === null) continue
+    for (let j = i + 1; j < 81; j++) {
+      if (puzzle[j] === null) continue
+      if (puzzle[i] === puzzle[j]) {
+        if (row(i) === row(j) || col(i) === col(j) || box(i) === box(j)) return false
+      }
+    }
+  }
+  return true
 }
 
 // ── Component ──
@@ -428,11 +462,13 @@ export default function Sudoku() {
                     onClick={() => setSelected(i)}
                     type="button"
                     className={`relative flex items-center justify-center text-base font-semibold transition-colors sm:text-lg ${
-                      isSelected
-                        ? 'bg-blurple/40'
-                        : isHighlighted
-                          ? 'bg-blurple/15'
-                          : 'bg-server-rail hover:bg-hover'
+                      conflict
+                        ? '!bg-dnd/30 !text-dnd'
+                        : isSelected
+                          ? 'bg-blurple/40'
+                          : isHighlighted
+                            ? 'bg-blurple/15'
+                            : 'bg-server-rail hover:bg-hover'
                     } ${isGiven ? 'text-text-primary font-bold' : 'text-blurple'} ${
                       conflict ? '!text-dnd' : ''
                     } ${gaveUpHere ? 'text-text-dim' : ''}`}
