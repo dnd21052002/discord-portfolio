@@ -129,19 +129,17 @@ export default function Sudoku() {
       next[selected] = n
       setBoard(next)
 
-      // Count mistake only when:
-      // 1. New digit is wrong (n ≠ solutionAt)
-      // 2. AND conflicts with at least one peer (Sudoku rule)
-      // 3. AND cell wasn't already in a wrong state (was === null OR was === solutionAt)
-      // This way: 1 user input = max 1 mistake. Fixing one mistake with another
-      // wrong digit doesn't double-count.
-      if (n !== solutionAt && hasConflict(next, selected)) {
+      // Count mistake whenever user types a digit that doesn't match
+      // the solution — regardless of whether it violates Sudoku row/col/box
+      // rules. (Sudoku's only correct digit per cell is the solution digit;
+      // any other choice is wrong.)
+      if (n !== solutionAt) {
         const wasCorrect = was === null || was === solutionAt
         if (wasCorrect) {
           setMistakes((m) => m + 1)
         }
       }
-    }, [board, selected, status, giveUp, puzzleData])
+      }, [board, selected, status, giveUp, puzzleData])
 
     const clearCell = useCallback(() => {
       if (status !== 'playing' || giveUp) return
@@ -290,14 +288,16 @@ export default function Sudoku() {
                 const isSelected = selected === i
                 const isHighlighted = highlights.has(i)
                 const isGiven = puzzleData?.puzzle[i] !== null
+                const solutionAt = puzzleData?.solution[i]
                 const conflict = cell !== null && hasConflict(displayBoard, i)
-                const gaveUpHere = giveUp && cell !== null && puzzleData?.solution[i] !== cell
+                const isWrongUser = !isGiven && cell !== null && cell !== solutionAt
+                const gaveUpHere = giveUp && cell !== null && solutionAt !== cell
                 return (
                   <button
                     key={i}
                     onClick={() => setSelected(i)}
                     type="button"
-                    className={`relative flex items-center justify-center ${c < 8 ? 'border-r' : ''} ${r < 8 ? 'border-b' : ''} border-channel-sidebar/60 text-base font-semibold transition-colors sm:text-lg ${
+                    className={`relative flex items-center justify-center ${c < 8 ? 'border-r' : ''} ${r < 8 ? 'border-b' : ''} border-channel-sidebar/60 text-base transition-colors sm:text-lg ${
                       conflict
                         ? '!bg-dnd/30 !text-dnd'
                         : isSelected
@@ -305,8 +305,12 @@ export default function Sudoku() {
                           : isHighlighted
                             ? 'bg-blurple/15'
                             : 'bg-server-rail hover:bg-hover'
-                    } ${isGiven ? 'text-text-primary font-bold' : 'text-blurple'} ${
-                      conflict ? '!text-dnd' : ''
+                    } ${
+                      isGiven
+                        ? 'font-bold text-text-primary'
+                        : isWrongUser
+                          ? 'font-bold !text-dnd'
+                          : 'font-medium text-blurple'
                     } ${gaveUpHere ? 'text-text-dim' : ''}`}
                     style={{ aspectRatio: '1 / 1' }}
                   >
