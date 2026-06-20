@@ -123,6 +123,7 @@ function countDigits(board: Board): number[] {
 }
 
 // ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties ──
+// ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties ──
 function carvePuzzle(
   solved: Board,
   minEmptiesPerDigit: number,
@@ -137,16 +138,28 @@ function carvePuzzle(
     ;[positions[i], positions[j]] = [positions[j], positions[i]]
   }
 
+  // Helper: check whether we may still remove a cell with this digit.
+  const mayRemoveDigit = (d: number): boolean => {
+    return givensPerDigit[d - 1] > 9 - minEmptiesPerDigit
+  }
+
   for (const i of positions) {
     const digit = puzzle[i]
-    if (digit === null) continue // already empty
-    // Constraint: each digit must keep at least 9 - minEmptiesPerDigit givens
-    const maxGivensForThisDigit = 9 - minEmptiesPerDigit
-    if (givensPerDigit[digit - 1] <= maxGivensForThisDigit) continue
+    if (digit === null) continue
+    if (!mayRemoveDigit(digit)) continue
 
     const mirror = 80 - i
-    const pair = i === mirror ? [i] : [i, mirror]
-    if (pair.some((p) => puzzle[p] === null)) continue
+    let pair: number[]
+    if (i === mirror) {
+      pair = [i]
+    } else {
+      const mirrorDigit = puzzle[mirror]
+      if (mirrorDigit === null) continue
+      // IMPORTANT: enforce constraint for BOTH digits in the pair
+      if (!mayRemoveDigit(digit)) continue
+      if (!mayRemoveDigit(mirrorDigit)) continue
+      pair = [i, mirror]
+    }
 
     const backup = pair.map((p) => puzzle[p])
     pair.forEach((p) => {
