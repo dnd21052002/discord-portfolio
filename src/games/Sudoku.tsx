@@ -1,43 +1,14 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useT } from '../i18n/LocaleContext'
+import { getSudoku } from 'sudoku-gen'
 
 type Difficulty = 'easy' | 'medium' | 'hard'
 type Cell = number | null
 type Board = Cell[] // length 81
 type Status = 'playing' | 'won' | 'over'
 
-// Minimum empties per digit (1-9) by difficulty.
-// Easy:   every digit must have ≥ 4 empty cells → max 5 givens per digit
-// Medium: every digit must have ≥ 5 empty cells → max 4 givens per digit
-// Hard:   every digit must have ≥ 6 empty cells → max 3 givens per digit
-const MIN_EMPTIES_PER_DIGIT: Record<Difficulty, number> = {
-  easy: 4,
-  medium: 5,
-  hard: 6,
-}
-// Target total givens per puzzle (lower bound = harder).
-// Below this, carving stops even if more cells could be removed.
-// This prevents puzzles that are trivially easy because too many
-// cells were stripped (still unique solution, but no challenge).
-const TARGET_TOTAL_GIVENS: Record<Difficulty, number> = {
-  easy: 40,   // ~41 empties — comfortable
-  medium: 32, // ~49 empties — moderate
-  hard: 26,   // ~55 empties — challenging
-}
 const MAX_MISTAKES = 3
-
-// ── Seeded RNG (mulberry32) — keeps generator deterministic per seed ──
-function mulberry32(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = a
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
 
 // ── Board helpers ──
 const row = (i: number) => Math.floor(i / 9)
@@ -48,168 +19,22 @@ function emptyBoard(): Board {
   return Array(81).fill(null)
 }
 
-function isValidPlacement(board: Board, idx: number, n: number): boolean {
-  const r = row(idx), c = col(idx)
-  for (let i = 0; i < 9; i++) {
-    if (i !== idx && board[i] === n) {
-      const ri = row(i), ci = col(i)
-      if (ri === r || ci === c) return false
-    }
+// Convert sudoku-gen's 81-char string ("41--75----...") to Board
+function fromString(s: string): Board {
+  const out: Board = Array(81).fill(null)
+  for (let i = 0; i < 81; i++) {
+    const ch = s[i]
+    out[i] = ch >= '1' && ch <= '9' ? Number(ch) : null
   }
-  // 3x3 box
-  const br = Math.floor(r / 3) * 3
-  const bc = Math.floor(c / 3) * 3
-  for (let dr = 0; dr < 3; dr++) {
-    for (let dc = 0; dc < 3; dc++) {
-      const j = (br + dr) * 9 + (bc + dc)
-      if (j !== idx && board[j] === n) return false
-    }
-  }
-  return true
+  return out
 }
 
-// ── Backtracking solver — counts solutions up to `cap` ──
-function countSolutions(board: Board, cap = 2): number {
-  const empty: number[] = []
-  for (let i = 0; i < 81; i++) if (board[i] === null) empty.push(i)
-  let count = 0
-
-  const solve = (k: number): boolean => {
-    if (count >= cap) return true
-    if (k >= empty.length) {
-      count++
-      return count >= cap
-    }
-    const idx = empty[k]
-    for (let n = 1; n <= 9; n++) {
-      if (isValidPlacement(board, idx, n)) {
-        board[idx] = n
-        if (solve(k + 1)) return true
-        board[idx] = null
-      }
-    }
-    return false
-  }
-  solve(0)
-  return count
-}
-
-// ── Generate a full solved board ──
-function generateSolved(rng: () => number): Board {
-  const board = emptyBoard()
-  const order = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1))
-    ;[order[i], order[j]] = [order[j], order[i]]
-  }
-
-  const fill = (idx: number): boolean => {
-    if (idx >= 81) return true
-    if (board[idx] !== null) return fill(idx + 1)
-    const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for (let i = digits.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1))
-      ;[digits[i], digits[j]] = [digits[j], digits[i]]
-    }
-    for (const n of digits) {
-      if (isValidPlacement(board, idx, n)) {
-        board[idx] = n
-        if (fill(idx + 1)) return true
-        board[idx] = null
-      }
-    }
-    return false
-  }
-  fill(0)
-  return board
-}
-
-// ── Count occurrences of each digit in puzzle ──
-function countDigits(board: Board): number[] {
-  const c = [0, 0, 0, 0, 0, 0, 0, 0, 0] // index 0 unused, index d-1 = count of digit d
-  for (const v of board) if (v !== null && v >= 1 && v <= 9) c[v - 1]++
-  return c
-}
-
-// ── Carve a puzzle by removing cells symmetrically; enforce per-digit min empties
-// and a total givens lower bound (stop carving early if puzzle already hard enough) ──
-function carvePuzzle(
-  solved: Board,
-  minEmptiesPerDigit: number,
-  targetTotalGivens: number,
-  rng: () => number,
-): Board {
-  const puzzle = [...solved]
-  let givensPerDigit = countDigits(puzzle) // start with 9 givens per digit
-
-  const positions = Array.from({ length: 81 }, (_, i) => i)
-  for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1))
-    ;[positions[i], positions[j]] = [positions[j], positions[i]]
-  }
-
-  // Helper: check whether we may still remove a cell with this digit.
-  const mayRemoveDigit = (d: number): boolean => {
-    return givensPerDigit[d - 1] > 9 - minEmptiesPerDigit
-  }
-
-  // Helper: total remaining givens
-  const totalGivens = (): number => {
-    let c = 0
-    for (const v of puzzle) if (v !== null) c++
-    return c
-  }
-
-  for (const i of positions) {
-    // Early stop: already at the target givens count — puzzle hard enough
-    if (totalGivens() <= targetTotalGivens) break
-
-    const digit = puzzle[i]
-    if (digit === null) continue
-    if (!mayRemoveDigit(digit)) continue
-
-    const mirror = 80 - i
-    let pair: number[]
-    if (i === mirror) {
-      pair = [i]
-    } else {
-      const mirrorDigit = puzzle[mirror]
-      if (mirrorDigit === null) continue
-      // IMPORTANT: enforce constraint for BOTH digits in the pair
-      if (!mayRemoveDigit(digit)) continue
-      if (!mayRemoveDigit(mirrorDigit)) continue
-      pair = [i, mirror]
-    }
-
-    const backup = pair.map((p) => puzzle[p])
-    pair.forEach((p) => {
-      if (puzzle[p] !== null) {
-        givensPerDigit[puzzle[p]! - 1]--
-      }
-      puzzle[p] = null
-    })
-
-    const copy = [...puzzle]
-    const solCount = countSolutions(copy, 2)
-    if (solCount !== 1) {
-      // Restore values + counts
-      pair.forEach((p, k) => {
-        puzzle[p] = backup[k]
-        if (backup[k] !== null) {
-          givensPerDigit[backup[k]! - 1]++
-        }
-      })
-    }
-  }
-  return puzzle
-}
-
-// ── Conflict detection: returns true if the cell value conflicts with peers ──
+// ── Conflict detection ──
 function hasConflict(board: Board, idx: number): boolean {
   const v = board[idx]
   if (v === null) return false
   const r = row(idx), c = col(idx)
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 81; i++) {
     if (i === idx) continue
     if (board[i] === v) {
       if (row(i) === r || col(i) === c) return true
@@ -237,65 +62,14 @@ function isCompleteAndValid(board: Board): boolean {
 type Puzzle = { puzzle: Board; solution: Board }
 
 function makePuzzle(diff: Difficulty): Puzzle {
-  const seed = Date.now() + Math.floor(Math.random() * 1e9)
-  const rng = mulberry32(seed)
-  const solution = generateSolved(rng)
-  // Retry a few times if carving fails to reach the digit-empties target.
-  let best: { puzzle: Board; solution: Board } | null = null
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const carved = carvePuzzle(
-      solution,
-      MIN_EMPTIES_PER_DIGIT[diff],
-      TARGET_TOTAL_GIVENS[diff],
-      rng,
-    )
-    // Defensive verification — givens MUST be valid (subset of valid solution).
-    if (validateGivens(carved, solution)) {
-      best = { puzzle: carved, solution }
-      break
-    }
+  const s = getSudoku(diff)
+  return {
+    puzzle: fromString(s.puzzle),
+    solution: fromString(s.solution),
   }
-  if (!best) {
-    best = {
-      puzzle: carvePuzzle(
-        solution,
-        MIN_EMPTIES_PER_DIGIT[diff],
-        TARGET_TOTAL_GIVENS[diff],
-        rng,
-      ),
-      solution,
-    }
-  }
-  // Log actual stats for debugging difficulty calibration.
-  if (typeof window !== 'undefined' && (window as any).__sudokuDebug) {
-    const empties = best.puzzle.filter((c) => c === null).length
-    const counts = countDigits(best.puzzle)
-    console.log(
-      `[sudoku ${diff}] givens=${81 - empties} empties=${empties} perDigit=${counts
-        .map((c, i) => `${i + 1}:${9 - c}`)
-        .join(' ')}`,
-    )
-  }
-  return best
 }
 
-function validateGivens(puzzle: Board, solution: Board): boolean {
-  // 1. Every non-null cell must match the solution.
-  for (let i = 0; i < 81; i++) {
-    if (puzzle[i] !== null && puzzle[i] !== solution[i]) return false
-  }
-  // 2. No two givens in the same row/col/box may hold the same digit.
-  for (let i = 0; i < 81; i++) {
-    if (puzzle[i] === null) continue
-    for (let j = i + 1; j < 81; j++) {
-      if (puzzle[j] === null) continue
-      if (puzzle[i] === puzzle[j]) {
-        if (row(i) === row(j) || col(i) === col(j) || box(i) === box(j)) return false
-      }
-    }
-  }
-  return true
-}
+// ── Component ──
 
 // ── Component ──
 export default function Sudoku() {
