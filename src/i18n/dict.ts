@@ -114,6 +114,8 @@ const vi: Dict = {
   'gamehub.memory.desc': 'Lật cặp emoji. Ít move + nhanh = điểm cao.',
   'gamehub.2048.title': '2048',
   'gamehub.2048.desc': 'Trượt số, gộp giống nhau, đạt 2048.',
+  'gamehub.sudoku.title': 'Sudoku',
+  'gamehub.sudoku.desc': 'Điền số 1–9. Mỗi hàng, cột, ô 3×3 đều không trùng.',
 
   // ── Snake ──
   'snake.title': 'Snake',
@@ -154,6 +156,23 @@ const vi: Dict = {
   'g2048.youWin': 'Bạn đạt 2048!',
   'g2048.continue': 'Tiếp tục',
   'g2048.winScore': 'Điểm:',
+
+  // ── Sudoku ──
+  'sudoku.easy': 'Dễ',
+  'sudoku.medium': 'Vừa',
+  'sudoku.hard': 'Khó',
+  'sudoku.newGame': 'Ván mới',
+  'sudoku.solve': 'Bỏ cuộc',
+  'sudoku.reset': 'Reset',
+  'sudoku.time': 'Thời gian',
+  'sudoku.mistakes': 'Sai',
+  'sudoku.difficulty': 'Độ khó',
+  'sudoku.youWin': 'Hoàn thành!',
+  'sudoku.playAgain': 'Chơi lại',
+  'sudoku.giveUp': 'Xem đáp án',
+  'sudoku.gameOver': 'Thua rồi!',
+  'sudoku.conflicts': '3 lỗi — hết lượt',
+  'sudoku.erase': 'Xóa ô',
 
   // ── Game (shared) ──
   'game.controls': 'Dùng phím mũi tên hoặc WASD để di chuyển',
@@ -348,6 +367,8 @@ const en: Dict = {
   'gamehub.memory.desc': 'Flip emoji pairs. Fewer moves + faster = best score.',
   'gamehub.2048.title': '2048',
   'gamehub.2048.desc': 'Slide tiles, merge same numbers, reach 2048.',
+  'gamehub.sudoku.title': 'Sudoku',
+  'gamehub.sudoku.desc': 'Fill 1–9. Each row, column, and 3×3 box has no repeats.',
 
   // ── Snake ──
   'snake.title': 'Snake',
@@ -388,6 +409,23 @@ const en: Dict = {
   'g2048.youWin': 'You reached 2048!',
   'g2048.continue': 'Continue',
   'g2048.winScore': 'Score:',
+
+  // ── Sudoku ──
+  'sudoku.easy': 'Easy',
+  'sudoku.medium': 'Medium',
+  'sudoku.hard': 'Hard',
+  'sudoku.newGame': 'New game',
+  'sudoku.solve': 'Give up',
+  'sudoku.reset': 'Reset',
+  'sudoku.time': 'Time',
+  'sudoku.mistakes': 'Mistakes',
+  'sudoku.difficulty': 'Difficulty',
+  'sudoku.youWin': 'You solved it!',
+  'sudoku.playAgain': 'Play again',
+  'sudoku.giveUp': 'Show solution',
+  'sudoku.gameOver': 'Game over!',
+  'sudoku.conflicts': '3 mistakes — out of moves',
+  'sudoku.erase': 'Erase',
 
   // ── Game (shared) ──
   'game.controls': 'Use arrow keys or WASD to move',

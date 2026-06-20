@@ -14,6 +14,7 @@ const Snake = lazy(() => import('./games/Snake'))
 const TicTacToe = lazy(() => import('./games/TicTacToe'))
 const MemoryMatch = lazy(() => import('./games/MemoryMatch'))
 const Game2048 = lazy(() => import('./games/Game2048'))
+const Sudoku = lazy(() => import('./games/Sudoku'))
 
 export type SectionId =
   | 'welcome' | 'about' | 'projects' | 'tech' | 'experience' | 'contact'
@@ -31,6 +32,7 @@ const gameTitleKeys: Record<GameId, string> = {
   tictactoe: 'gamehub.tictactoe.title',
   memory: 'gamehub.memory.title',
   '2048': 'gamehub.2048.title',
+  sudoku: 'gamehub.sudoku.title',
 }
 
 const THEME_KEY = 'ngocdiep-portfolio-theme'
@@ -187,6 +189,7 @@ function Shell() {
                     {currentGameId === 'tictactoe' && <TicTacToe />}
                     {currentGameId === 'memory' && <MemoryMatch />}
                     {currentGameId === '2048' && <Game2048 />}
+                    {currentGameId === 'sudoku' && <Sudoku />}
                   </Suspense>
                 ) : (
                   <MainArea active={active} />

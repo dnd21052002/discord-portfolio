@@ -1,8 +1,8 @@
 import { motion } from 'motion/react'
-import { SnakeIcon, TicTacToeIcon, MemoryIcon, Game2048Icon, PlayIcon } from './GameIcons'
+import { SnakeIcon, TicTacToeIcon, MemoryIcon, Game2048Icon, SudokuIcon, PlayIcon } from './GameIcons'
 import { useT } from '../i18n/LocaleContext'
 
-export type GameId = 'snake' | 'tictactoe' | 'memory' | '2048'
+export type GameId = 'snake' | 'tictactoe' | 'memory' | '2048' | 'sudoku'
 
 export type GameMeta = {
   id: GameId
@@ -50,6 +50,15 @@ const GAMES: GameMeta[] = [
     Icon: Game2048Icon,
     gradient: 'from-yellow-500/30 via-yellow-500/10 to-transparent',
     accent: 'text-yellow-400',
+  },
+  {
+    id: 'sudoku',
+    titleKey: 'gamehub.sudoku.title',
+    descKey: 'gamehub.sudoku.desc',
+    emoji: '🧩',
+    Icon: SudokuIcon,
+    gradient: 'from-emerald-500/30 via-emerald-500/10 to-transparent',
+    accent: 'text-emerald-400',
   },
 ]
 
